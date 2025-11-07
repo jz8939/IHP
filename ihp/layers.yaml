@@ -271,7 +271,7 @@ LayerViews:
     width: 1
   Metal1drawing:
     layer: [8, 0]
-    hatch_pattern: m1
+    hatch_pattern: coarsely dotted
     width: 1
     color: "#39bfff"
   Metal1label:
@@ -364,7 +364,7 @@ LayerViews:
     color: "#ccccff"
   Metal2drawing:
     layer: [10, 0]
-    hatch_pattern: m2
+    hatch_pattern: coarsely dotted
     width: 1
     color: "#ccccd9"
   Metal2label:
@@ -457,7 +457,7 @@ LayerViews:
     color: "#ff3736"
   Metal3drawing:
     layer: [30, 0]
-    hatch_pattern: m3
+    hatch_pattern: coarsely dotted
     width: 1
     color: "#d80000"
   Metal3label:
@@ -573,7 +573,7 @@ LayerViews:
     color: "#9ba940"
   Metal4drawing:
     layer: [50, 0]
-    hatch_pattern: m4
+    hatch_pattern: coarsely dotted
     width: 1
     color: "#93e837"
   Metal4label:
@@ -666,7 +666,7 @@ LayerViews:
     color: "#deac5e"
   Metal5drawing:
     layer: [67, 0]
-    hatch_pattern: m5
+    hatch_pattern: coarsely dotted
     width: 1
     color: "#dcd146"
   Metal5label:
@@ -759,7 +759,7 @@ LayerViews:
     color: "#ffe6bf"
   TopMetal1drawing:
     layer: [126, 0]
-    hatch_pattern: tm1
+    hatch_pattern: coarsely dotted
     width: 1
     color: "#ffe6bf"
   TopMetal1label:
@@ -844,7 +844,7 @@ LayerViews:
     color: "#ff8000"
   TopMetal2drawing:
     layer: [134, 0]
-    hatch_pattern: tm2
+    hatch_pattern: coarsely dotted
     width: 1
     color: "#ff8000"
   TopMetal2label:
@@ -1410,7 +1410,7 @@ LayerViews:
     color: "magenta"
   BackMetal1drawing:
     layer: [20, 0]
-    hatch_pattern: tm1
+    hatch_pattern: coarsely dotted
     width: 1
     color: "#ffe6bf"
   BackMetal1label:
@@ -1690,7 +1690,7 @@ LayerViews:
     color: "#e61f0d"
   GraphMetal1drawing:
     layer: [109, 0]
-    hatch_pattern: m5
+    hatch_pattern: coarsely dotted
     valid: false
     width: 1
     color: "#00b300"
@@ -1714,7 +1714,7 @@ LayerViews:
     color: "#00b300"
   GraphMet1Ldrawing:
     layer: [110, 0]
-    hatch_pattern: m4
+    hatch_pattern: coarsely dotted
     valid: false
     width: 1
     color: "#34b7ab"
@@ -2031,75 +2031,75 @@ LayerViews:
     group_members:
       Activfiller:
         layer: [1, 22]
-        hatch_pattern: vZigZag
+        hatch_pattern: coarsely dotted
         width: 1
         color: "lime"
       GatPolyfiller:
         layer: [5, 22]
-        hatch_pattern: dagger
+        hatch_pattern: coarsely dotted
         width: 1
         color: "#bf4026"
       Metal1filler:
         layer: [8, 22]
-        hatch_pattern: m1
+        hatch_pattern: coarsely dotted
         width: 1
         color: "#39bfff"
       Metal2filler:
         layer: [10, 22]
-        hatch_pattern: m2
+        hatch_pattern: coarsely dotted
         width: 1
         color: "#ccccd9"
       Metal3filler:
         layer: [30, 22]
-        hatch_pattern: m3
+        hatch_pattern: coarsely dotted
         width: 1
         color: "#d80000"
       Metal4filler:
         layer: [50, 22]
-        hatch_pattern: m4
+        hatch_pattern: coarsely dotted
         width: 1
         color: "#93e837"
       Metal5filler:
         layer: [67, 22]
-        hatch_pattern: m5
+        hatch_pattern: coarsely dotted
         width: 1
         color: "#dcd146"
       TopMetal1filler:
         layer: [126, 22]
-        hatch_pattern: tm1
+        hatch_pattern: coarsely dotted
         width: 1
         color: "#ffe6bf"
       TopMetal2filler:
         layer: [134, 22]
-        hatch_pattern: m1
+        hatch_pattern: coarsely dotted
         width: 1
         color: "#ff8000"
       BackMetal1filler:
         layer: [20, 22]
-        hatch_pattern: hollow
+        hatch_pattern: coarsely dotted
         width: 1
         color: "#ffe6bf"
       SiWGfiller:
         layer: [86, 22]
-        hatch_pattern: stipple12
+        hatch_pattern: coarsely dotted
         valid: false
         width: 1
         color: "#d80000"
       GraphMetal1filler:
         layer: [109, 22]
-        hatch_pattern: m5
+        hatch_pattern: coarsely dotted
         valid: false
         width: 1
         color: "#00b300"
       GraphMet1Lfiller:
         layer: [110, 22]
-        hatch_pattern: m4
+        hatch_pattern: coarsely dotted
         valid: false
         width: 1
         color: "#34b7ab"
       SiNWGfiller:
         layer: [119, 22]
-        hatch_pattern: stipple12
+        hatch_pattern: coarsely dotted
         valid: false
         width: 1
         color: "#ffffcc"
