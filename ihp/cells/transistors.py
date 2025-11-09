@@ -514,12 +514,27 @@ def rfpmos(
 
 
 if __name__ == "__main__":
+    from gdsfactory.difftest import xor
+
+    from ihp import PDK, cells
+
+    PDK.activate()
+
     # Test the components
-    c1 = nmos(width=2.0, length=0.13, nf=4)
-    c1.show()
+    c0 = cells.nmos()  # original
+    c1 = nmos()  # New
+    # c = gf.grid([c0, c1], spacing=100)
+    c = xor(c0, c1)
+    c.show()
 
-    c2 = pmos(width=3.0, length=0.13, nf=2)
-    c2.show()
+    # c0 = cells.pmos()  # original
+    # c1 = pmos()  # New
+    # # c = gf.grid([c0, c1], spacing=100)
+    # c = xor(c0, c1)
+    # c.show()
 
-    c3 = rfnmos(width=5.0, length=0.13, nf=8)
-    c3.show()
+    # c0 = cells.rfnmos()  # original
+    # c1 = rfnmos()  # New
+    # # c = gf.grid([c0, c1], spacing=100)
+    # c = xor(c0, c1)
+    # c.show()

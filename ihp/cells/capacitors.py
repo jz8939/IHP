@@ -386,9 +386,21 @@ def rfcmim(
 
 
 if __name__ == "__main__":
-    # Test the components
-    c1 = cmim(width=10, length=10)
-    c1.show()
+    from gdsfactory.difftest import xor
 
-    c2 = rfcmim(width=20, length=20)
-    c2.show()
+    from ihp import PDK, cells
+
+    PDK.activate()
+
+    # Test the components
+    c0 = cells.cmim()  # original
+    c1 = cmim()  # New
+    # c = gf.grid([c0, c1], spacing=100)
+    c = xor(c0, c1)
+    c.show()
+
+    # c0 = cells.rfcmim()  # original
+    # c1 = rfcmim()  # New
+    # # c = gf.grid([c0, c1], spacing=100)
+    # c = xor(c0, c1)
+    # c.show()

@@ -200,9 +200,21 @@ def inductor3(
 
 
 if __name__ == "__main__":
-    # Test the components
-    c1 = inductor2()
-    c1.show()
+    from gdsfactory.difftest import xor
 
-    c2 = inductor3()
-    c2.show()
+    from ihp import PDK, cells
+
+    PDK.activate()
+
+    # Test the components
+    c0 = cells.inductor2()  # original
+    c1 = inductor2()  # New
+    # c = gf.grid([c0, c1], spacing=100)
+    c = xor(c0, c1)
+    c.show()
+
+    # c0 = cells.inductor3()  # original
+    # c1 = inductor3()  # New
+    # # c = gf.grid([c0, c1], spacing=100)
+    # c = xor(c0, c1)
+    # c.show()

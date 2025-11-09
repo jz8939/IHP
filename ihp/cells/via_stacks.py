@@ -378,12 +378,27 @@ def via_stack_with_pads(
 
 
 if __name__ == "__main__":
+    from gdsfactory.difftest import xor
+
+    from ihp import PDK, cells
+
+    PDK.activate()
+
     # Test the components
-    c1 = via_array(via_type="Via1", columns=3, rows=3)
-    c1.show()
+    # Note: via_array is not in cells, so we'll test via_stack
+    # c0 = cells.via_array()  # original
+    # c1 = via_array()  # New
+    # # c = gf.grid([c0, c1], spacing=100)
+    # c = xor(c0, c1)
+    # c.show()
 
-    c2 = via_stack(bottom_layer="Metal1", top_layer="Metal5")
-    c2.show()
+    c0 = cells.ViaStack()  # original
+    c1 = via_stack()  # New
+    c = xor(c0, c1)
+    c.show()
 
-    c3 = via_stack_with_pads(bottom_layer="Metal1", top_layer="TopMetal2")
-    c3.show()
+    # c0 = cells.via_stack_with_pads()  # original
+    # c1 = via_stack_with_pads()  # New
+    # # c = gf.grid([c0, c1], spacing=100)
+    # c = xor(c0, c1)
+    # c.show()

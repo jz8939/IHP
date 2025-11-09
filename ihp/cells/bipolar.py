@@ -539,8 +539,21 @@ def pnpMPA(
 
 if __name__ == "__main__":
     # Test the components
-    c1 = npn13G2(emitter_width=0.07, emitter_length=0.9)
-    c1.show()
+    # c1 = npn13G2(emitter_width=0.07, emitter_length=0.9)
+    # c1.show()
 
-    c2 = pnpMPA(emitter_width=0.4, emitter_length=0.4)
-    c2.show()
+    # c2 = pnpMPA(emitter_width=0.4, emitter_length=0.4)
+    # c2.show()
+
+    from gdsfactory.difftest import xor
+
+    from ihp import PDK, cells
+
+    PDK.activate()
+
+    # Test the components
+    c0 = cells.npn13G2()  # original
+    c1 = npn13G2()  # New
+    # c = gf.grid([c0, c1], spacing=100)
+    c = xor(c0, c1)
+    c.show()

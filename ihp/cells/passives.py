@@ -704,15 +704,33 @@ def sealring(
 
 
 if __name__ == "__main__":
+    from gdsfactory.difftest import xor
+
+    from ihp import PDK, cells
+
+    PDK.activate()
+
     # Test the components
-    c1 = svaricap(width=2.0, length=1.0, nf=4)
-    c1.show()
+    # c0 = cells.svaricap()  # original
+    # c1 = svaricap()  # New
+    # # c = gf.grid([c0, c1], spacing=100)
+    # c = xor(c0, c1)
+    # c.show()
 
-    c2 = esd_nmos(width=100.0, length=0.5, nf=20)
-    c2.show()
+    # c0 = cells.esd_nmos()  # original
+    # c1 = esd_nmos()  # New
+    # # c = gf.grid([c0, c1], spacing=100)
+    # c = xor(c0, c1)
+    # c.show()
 
-    c3 = ptap1(width=2.0, length=2.0, rows=2, cols=2)
-    c3.show()
+    c0 = cells.ptap1()  # original
+    c1 = ptap1()  # New
+    # c = gf.grid([c0, c1], spacing=100)
+    c = xor(c0, c1)
+    c.show()
 
-    c4 = sealring(width=500, height=500, ring_width=10)
-    c4.show()
+    # c0 = cells.sealring()  # original
+    # c1 = sealring()  # New
+    # # c = gf.grid([c0, c1], spacing=100)
+    # c = xor(c0, c1)
+    # c.show()

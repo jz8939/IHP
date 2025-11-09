@@ -517,12 +517,26 @@ def rhigh(
 
 
 if __name__ == "__main__":
+    from gdsfactory.difftest import xor
+
+    from ihp import PDK, cells
+
+    PDK.activate()
+
     # Test the components
-    c1 = rsil(width=1.0, length=10.0)
-    c1.show()
+    c0 = cells.rsil()  # original
+    c1 = rsil()  # New
+    c = xor(c0, c1)
+    c.show()
 
-    c2 = rppd(width=0.8, length=20.0)
-    c2.show()
+    # c0 = cells.rppd()  # original
+    # c1 = rppd()  # New
+    # # c = gf.grid([c0, c1], spacing=100)
+    # c = xor(c0, c1)
+    # c.show()
 
-    c3 = rhigh(width=1.4, length=50.0)
-    c3.show()
+    # c0 = cells.rhigh()  # original
+    # c1 = rhigh()  # New
+    # # c = gf.grid([c0, c1], spacing=100)
+    # c = xor(c0, c1)
+    # c.show()
