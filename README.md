@@ -42,9 +42,10 @@ Then you can install with:
 
 ```bash
 git clone https://github.com/gdsfactory/ihp.git
-cd ubc
+cd ihp
 uv venv --python 3.12
 uv sync --extra docs --extra dev
+python install_tech.py
 ```
 
 ## Documentation
