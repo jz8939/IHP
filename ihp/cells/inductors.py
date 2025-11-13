@@ -35,17 +35,16 @@ def inductor2(
     layer_inductor: LayerSpec = "INDdrawing",
     layer_metal_pin: LayerSpec = "TopMetal2pin",
     layers_no_fill: LayerSpecs = (
-        "ActiveNoFill",
-        "GatePolyNoFill",
-        "Metal1NoFill",
-        "Metal2NoFill",
-        "Metal3NoFill",
-        "Metal4NoFill",
-        "Metal5NoFill",
-        "TopMetal1NoFill",
-        "TopMetal2NoFill",
-        "NoRCX",
-        "PWellBlock",
+        "Activnofill",
+        "GatPolynofill",
+        "Metal1nofill",
+        "Metal2nofill",
+        "Metal3nofill",
+        "Metal4nofill",
+        "Metal5nofill",
+        "TopMetal1nofill",
+        "TopMetal2nofill",
+        "PWellblock",
     ),
 ) -> Component:
     """Create a 2-turn inductor.
@@ -114,6 +113,7 @@ def inductor2(
         x = r_outer * math.cos(angle)
         y = r_outer * math.sin(angle) + octagon_center_y
         outer_polygon_pts.append((x, y))
+
     c.add_polygon(points=outer_polygon_pts, layer=layer_inductor)
 
     # Add No fill layers
@@ -146,7 +146,21 @@ def inductor3(
     resistance: float = 1.386,
     inductance: float = 221.5e-12,
     turns: int = 2,
-    block_qrc: bool = True,
+    layer_metal: LayerSpec = "TopMetal2drawing",
+    layer_inductor: LayerSpec = "INDdrawing",
+    layer_metal_pin: LayerSpec = "TopMetal2pin",
+    layers_no_fill: LayerSpecs = (
+        "Activnofill",
+        "GatPolynofill",
+        "Metal1nofill",
+        "Metal2nofill",
+        "Metal3nofill",
+        "Metal4nofill",
+        "Metal5nofill",
+        "TopMetal1nofill",
+        "TopMetal2nofill",
+        "PWellblock",
+    ),
 ) -> Component:
     """Create a 3-turn inductor.
 
@@ -157,7 +171,10 @@ def inductor3(
         resistance: Resistance in ohms.
         inductance: Inductance in henries.
         turns: Number of turns (default 2 for inductor3).
-        block_qrc: Block QRC layer.
+        layer_metal: Metal layer for the inductor trace.
+        layer_inductor: IND layer for inductor marking.
+        layer_metal_pin: Metal pin layer.
+        layers_no_fill: Tuple of no-fill layers to add.
 
     Returns:
         Component with inductor layout.
@@ -170,7 +187,10 @@ def inductor3(
         resistance=resistance,
         inductance=inductance,
         turns=turns,
-        block_qrc=block_qrc,
+        layer_metal=layer_metal,
+        layer_inductor=layer_inductor,
+        layer_metal_pin=layer_metal_pin,
+        layers_no_fill=layers_no_fill,
     )
 
 

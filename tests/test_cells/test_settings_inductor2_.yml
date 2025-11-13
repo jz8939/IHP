@@ -1,18 +1,30 @@
 info:
-  diameter: 15.48
+  diameter: 25.35
   inductance: 0.0
   model: inductor2
   resistance: 0.578
   space: 2.1
   turns: 1
   width: 2
-name: inductor2_W2_S2p1_D15p48_R0p5777_I3p3303em11_T1_BQTrue_SEFalse
+name: inductor2_W2_S2p1_D25p35_R0p5777_I3p3303em11_T1_LMTopMe_7ef1c0b8
 settings:
-  block_qrc: true
-  diameter: 15.48
+  diameter: 25.35
   inductance: 0.0
+  layer_inductor: INDdrawing
+  layer_metal: TopMetal2drawing
+  layer_metal_pin: TopMetal2pin
+  layers_no_fill:
+  - Activnofill
+  - GatPolynofill
+  - Metal1nofill
+  - Metal2nofill
+  - Metal3nofill
+  - Metal4nofill
+  - Metal5nofill
+  - TopMetal1nofill
+  - TopMetal2nofill
+  - PWellblock
   resistance: 0.578
   space: 2.1
-  substrate_etch: false
   turns: 1
   width: 2
