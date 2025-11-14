@@ -20,7 +20,6 @@ docs/components_plot.rst
 *.so
 *.json
 *.sqlite3
-*.png
 *.db
 *.pkl
 .idea/

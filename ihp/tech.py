@@ -448,19 +448,34 @@ margin = 0.5
 
 
 def get_layer_stack(
-    thickness_metal: float = 0.5,  # Metal thickness
-    thickness_via: float = 0.3,  # Via thickness
+    thickness_metal1: float = 0.4,  # Metal1 thickness (400 nm from process specs)
+    thickness_metal: float = 0.49,  # Metal2-5 thickness (490 nm from process specs)
+    thickness_via1: float = 0.24,  # Via1 thickness (240 nm from process specs)
+    thickness_via: float = 0.54,  # Via2-4 thickness (540 nm from process specs)
+    thickness_topvia1: float = 0.85,  # TopVia1 thickness (850 nm from process specs)
+    thickness_topmetal1: float = 2.0,  # TopMetal1 thickness (2000 nm from process specs)
+    thickness_topvia2: float = 3.0,  # TopVia2 thickness (3000 nm from process specs)
+    thickness_topmetal2: float = 1.5,  # TopMetal2 thickness (1500 nm from process specs)
     substrate_thickness: float = 300.0,  # Full substrate
 ) -> LayerStack:
     """Returns IHP PDK LayerStack for 3D visualization and simulation.
 
+    Layer thicknesses are based on the IHP SG13 process specifications.
+    Reference: https://ihp-open-pdk-docs.readthedocs.io/en/latest/process_specs/01_01_main_process_cross_sec.html
+
     Args:
-        thickness_metal: Metal layer thickness in um.
-        thickness_via: Via layer thickness in um.
-        substrate_thickness: Substrate thickness in um.
+        thickness_metal1: Metal1 layer thickness in um (default: 0.4).
+        thickness_metal: Metal2-5 layer thickness in um (default: 0.49).
+        thickness_via1: Via1 layer thickness in um (default: 0.24).
+        thickness_via: Via2-4 layer thickness in um (default: 0.54).
+        thickness_topvia1: TopVia1 layer thickness in um (default: 0.85).
+        thickness_topmetal1: TopMetal1 layer thickness in um (default: 2.0).
+        thickness_topvia2: TopVia2 layer thickness in um (default: 3.0).
+        thickness_topmetal2: TopMetal2 layer thickness in um (default: 1.5).
+        substrate_thickness: Substrate thickness in um (default: 300.0).
 
     Returns:
-        LayerStack for IHP PDK.
+        LayerStack for IHP PDK with properly connected metal and via layers.
     """
 
     return LayerStack(
@@ -492,7 +507,7 @@ def get_layer_stack(
             # Metal 1
             metal1=LayerLevel(
                 layer=LAYER.Metal1drawing,
-                thickness=thickness_metal,
+                thickness=thickness_metal1,
                 zmin=1.0,
                 material="aluminum",
                 info={"mesh_order": 3},
@@ -500,8 +515,8 @@ def get_layer_stack(
             # Via 1
             via1=LayerLevel(
                 layer=LAYER.Via1drawing,
-                thickness=thickness_via,
-                zmin=1.0 + thickness_metal,
+                thickness=thickness_via1,
+                zmin=1.0 + thickness_metal1,
                 material="tungsten",
                 info={"mesh_order": 4},
             ),
@@ -509,7 +524,7 @@ def get_layer_stack(
             metal2=LayerLevel(
                 layer=LAYER.Metal2drawing,
                 thickness=thickness_metal,
-                zmin=1.0 + thickness_metal + thickness_via,
+                zmin=1.0 + thickness_metal1 + thickness_via1,
                 material="aluminum",
                 info={"mesh_order": 5},
             ),
@@ -517,7 +532,7 @@ def get_layer_stack(
             via2=LayerLevel(
                 layer=LAYER.Via2drawing,
                 thickness=thickness_via,
-                zmin=1.0 + 2 * (thickness_metal + thickness_via),
+                zmin=1.0 + thickness_metal1 + thickness_via1 + thickness_metal,
                 material="tungsten",
                 info={"mesh_order": 6},
             ),
@@ -525,7 +540,11 @@ def get_layer_stack(
             metal3=LayerLevel(
                 layer=LAYER.Metal3drawing,
                 thickness=thickness_metal,
-                zmin=1.0 + 2 * (thickness_metal + thickness_via),
+                zmin=1.0
+                + thickness_metal1
+                + thickness_via1
+                + thickness_metal
+                + thickness_via,
                 material="aluminum",
                 info={"mesh_order": 7},
             ),
@@ -533,7 +552,11 @@ def get_layer_stack(
             via3=LayerLevel(
                 layer=LAYER.Via3drawing,
                 thickness=thickness_via,
-                zmin=1.0 + 3 * (thickness_metal + thickness_via),
+                zmin=1.0
+                + thickness_metal1
+                + thickness_via1
+                + 2 * thickness_metal
+                + thickness_via,
                 material="tungsten",
                 info={"mesh_order": 8},
             ),
@@ -541,7 +564,11 @@ def get_layer_stack(
             metal4=LayerLevel(
                 layer=LAYER.Metal4drawing,
                 thickness=thickness_metal,
-                zmin=1.0 + 3 * (thickness_metal + thickness_via),
+                zmin=1.0
+                + thickness_metal1
+                + thickness_via1
+                + 2 * thickness_metal
+                + 2 * thickness_via,
                 material="aluminum",
                 info={"mesh_order": 9},
             ),
@@ -549,7 +576,11 @@ def get_layer_stack(
             via4=LayerLevel(
                 layer=LAYER.Via4drawing,
                 thickness=thickness_via,
-                zmin=1.0 + 4 * (thickness_metal + thickness_via),
+                zmin=1.0
+                + thickness_metal1
+                + thickness_via1
+                + 3 * thickness_metal
+                + 2 * thickness_via,
                 material="tungsten",
                 info={"mesh_order": 10},
             ),
@@ -557,39 +588,65 @@ def get_layer_stack(
             metal5=LayerLevel(
                 layer=LAYER.Metal5drawing,
                 thickness=thickness_metal,
-                zmin=1.0 + 4 * (thickness_metal + thickness_via),
+                zmin=1.0
+                + thickness_metal1
+                + thickness_via1
+                + 3 * thickness_metal
+                + 3 * thickness_via,
                 material="aluminum",
                 info={"mesh_order": 11},
             ),
             # Top Via 1
             topvia1=LayerLevel(
                 layer=LAYER.TopVia1drawing,
-                thickness=thickness_via * 2,
-                zmin=1.0 + 5 * (thickness_metal + thickness_via),
+                thickness=thickness_topvia1,
+                zmin=1.0
+                + thickness_metal1
+                + thickness_via1
+                + 4 * thickness_metal
+                + 3 * thickness_via,
                 material="tungsten",
                 info={"mesh_order": 12},
             ),
             # Top Metal 1
             topmetal1=LayerLevel(
                 layer=LAYER.TopMetal1drawing,
-                thickness=thickness_metal * 2,
-                zmin=1.0 + 5 * (thickness_metal + thickness_via) + thickness_via,
+                thickness=thickness_topmetal1,
+                zmin=1.0
+                + thickness_metal1
+                + thickness_via1
+                + 4 * thickness_metal
+                + 3 * thickness_via
+                + thickness_topvia1,
                 material="aluminum",
                 info={"mesh_order": 13},
             ),
             # Top Via 2
             topvia2=LayerLevel(
                 layer=LAYER.TopVia2drawing,
-                thickness=thickness_via * 3,
-                zmin=1.0 + 6 * (thickness_metal + thickness_via),
+                thickness=thickness_topvia2,
+                zmin=1.0
+                + thickness_metal1
+                + thickness_via1
+                + 4 * thickness_metal
+                + 3 * thickness_via
+                + thickness_topvia1
+                + thickness_topmetal1,
                 material="tungsten",
                 info={"mesh_order": 14},
             ),
             # Top Metal 2
             topmetal2=LayerLevel(
                 layer=LAYER.TopMetal2drawing,
-                thickness=thickness_metal * 3,
-                zmin=1.0 + 6 * (thickness_metal + thickness_via) + thickness_via,
+                thickness=thickness_topmetal2,
+                zmin=1.0
+                + thickness_metal1
+                + thickness_via1
+                + 4 * thickness_metal
+                + 3 * thickness_via
+                + thickness_topvia1
+                + thickness_topmetal1
+                + thickness_topvia2,
                 material="aluminum",
                 info={"mesh_order": 15},
             ),
