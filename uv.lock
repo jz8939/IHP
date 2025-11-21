@@ -638,7 +638,7 @@ wheels = [
 
 [[package]]
 name = "gdsfactory"
-version = "9.20.7"
+version = "9.22.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -673,14 +673,14 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "watchdog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f7/74/4c67593c5714ec3910ae9efa43f57cbe7bc64aed23f5f1b23b5b6b7c55c1/gdsfactory-9.20.7.tar.gz", hash = "sha256:e5506059208405a85c8be543de93c9fdee80bee9a6baa3ccd2df4a5bce181e14", size = 481662, upload-time = "2025-11-07T02:10:05.313Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/89/27/e88aeec7e25622921d7b69a1ad8418f6f200ebf644051578e04ce1815c20/gdsfactory-9.22.0.tar.gz", hash = "sha256:031a342617f07533890dce8e485f1c33523fd656c73e9d1c5fa2f139ee496c11", size = 495241, upload-time = "2025-11-20T19:27:30.882Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/36/8b/cd1f5b991deae3484e769fcdde1b8720f159274d25185943c7e3e328672f/gdsfactory-9.20.7-py3-none-any.whl", hash = "sha256:ef6b1746d16969b824a2c150d21792091c42b64f2ccc067ac7e08b4db0b4fc13", size = 673979, upload-time = "2025-11-07T02:10:01.784Z" },
+    { url = "https://files.pythonhosted.org/packages/34/4d/20d983e539574f8bff7523d374a6adda1c48657eb5c6ed0d766b5d444f8d/gdsfactory-9.22.0-py3-none-any.whl", hash = "sha256:b680e4ccf0d254e53f2e64f9c90ddd916e9e5d619ac548421a13b438f991f2a0", size = 692634, upload-time = "2025-11-20T19:27:28.283Z" },
 ]
 
 [[package]]
 name = "gplugins"
-version = "1.4.2"
+version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "gdsfactory" },
@@ -689,9 +689,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "xarray" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/37/74/d387fd009d524badee0f57f3360d5e673424dad8bcaf1c464b18e2007a60/gplugins-1.4.2.tar.gz", hash = "sha256:ef7f7c927f229a96e342c8bdc959c43f10d5f12215eab36b1031395619000490", size = 537912, upload-time = "2025-08-13T22:27:11.493Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/05/cf/fe4ce705d3e436c9ea5d43e1922bf03c7b980388dd306492eb80c8abb504/gplugins-2.0.0.tar.gz", hash = "sha256:5ed60488310b185b185cef5f0caf8aca43228a331b0436948d5883610ad685d2", size = 527528, upload-time = "2025-11-13T18:00:01.153Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/48/00/be3bfe2378fd1fae857e64694135c30aed4d8e9aaa0cff2168b60b05481b/gplugins-1.4.2-py3-none-any.whl", hash = "sha256:f8499f854100fdf06ff0c8413c1af812d2cd2b20ac61e528816ae0fe113726ee", size = 665137, upload-time = "2025-08-13T22:27:09.814Z" },
+    { url = "https://files.pythonhosted.org/packages/7f/7c/34770c4533527923458ae9a1783577c213cd122e13c254bb742c1f949b6f/gplugins-2.0.0-py3-none-any.whl", hash = "sha256:03cc5c69236f25ec248cb188f857eca1382f2898330d88a549fb72a2b3074879", size = 648707, upload-time = "2025-11-13T17:59:59.142Z" },
 ]
 
 [package.optional-dependencies]
@@ -805,8 +805,8 @@ docs = [
 requires-dist = [
     { name = "autodoc-pydantic", marker = "extra == 'docs'" },
     { name = "doroutes", specifier = ">=0.2.0" },
-    { name = "gdsfactory", specifier = "~=9.20.7" },
-    { name = "gplugins", extras = ["sax"], specifier = "~=1.4.2" },
+    { name = "gdsfactory", specifier = "~=9.22.0" },
+    { name = "gplugins", extras = ["sax"], specifier = "~=2.0.0" },
     { name = "jsondiff", marker = "extra == 'dev'" },
     { name = "jupyter-book", marker = "extra == 'docs'", specifier = "==1.0.3" },
     { name = "jupytext", marker = "extra == 'docs'" },
