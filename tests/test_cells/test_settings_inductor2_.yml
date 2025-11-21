@@ -1,6 +1,7 @@
 info:
   diameter: 25.35
   inductance: 0.0
+  length: 88.397
   model: inductor2
   resistance: 0.578
   space: 2.1

@@ -92,7 +92,7 @@ def inductor2(
 
     # Create the path
     path = gf.Path(path_points)
-    _ = c << gf.path.extrude(path, layer=layer_metal, width=w)
+    c = gf.path.extrude(path, layer=layer_metal, width=w)
 
     # Adding ports
     length = 2 * r + s
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     PDK.activate()
 
     # Test the components
-    c0 = fixed.inductor2()  # original
+    c0 = fixed.inductor2_fixed()  # original
     c1 = inductor2()  # New Parametric
     c = xor(c0, c1)
     c.show()

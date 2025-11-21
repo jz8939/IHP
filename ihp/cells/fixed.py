@@ -407,7 +407,7 @@ def dummy1() -> gf.Component:
 
 
 @gf.cell
-def inductor2() -> gf.Component:
+def inductor2_fixed() -> gf.Component:
     """Returns inductor2 fixed cell.
 
     .. plot::
