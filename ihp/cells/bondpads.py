@@ -1,19 +1,26 @@
 """Bondpad components for IHP PDK."""
 
-from gdsfactory import Component
-
-from typing import Literal, Tuple
 import math
+from typing import Literal
+
 import gdsfactory as gf
+from gdsfactory import Component
 from gdsfactory.typings import LayerSpec
+
 
 def regular_octagon_points(diameter: float):
     """Create a regular octagon"""
     side = diameter / (1 + math.sqrt(2))
     R = side / (2 * math.sin(math.pi / 8))
     start_angle = math.pi / 8
-    return [(R * math.cos(start_angle + i * math.pi / 4),
-             R * math.sin(start_angle + i * math.pi / 4)) for i in range(8)]
+    return [
+        (
+            R * math.cos(start_angle + i * math.pi / 4),
+            R * math.sin(start_angle + i * math.pi / 4),
+        )
+        for i in range(8)
+    ]
+
 
 @gf.cell
 def bondpad(
@@ -22,7 +29,7 @@ def bondpad(
     layer_top_metal: LayerSpec = "TopMetal2drawing",
     layer_passiv: LayerSpec = "Passivpillar",
     layer_dfpad: LayerSpec = "dfpaddrawing",
-    bbox_offsets: Tuple[float, ...] | None = (-2.1, 0),
+    bbox_offsets: tuple[float, ...] | None = (-2.1, 0),
     flip_chip: bool = False,
 ) -> gf.Component:
     """Create a bondpad for wire bonding or flip-chip connection.
@@ -45,7 +52,9 @@ def bondpad(
 
     # Add top metal layer
     if shape == "square":
-        c.add_ref(gf.components.rectangle(size=(d, d), layer=layer_top_metal, centered=True))
+        c.add_ref(
+            gf.components.rectangle(size=(d, d), layer=layer_top_metal, centered=True)
+        )
 
     elif shape == "octagon":
         pts = regular_octagon_points(d)
@@ -69,7 +78,9 @@ def bondpad(
         new_d = d + float(offset * 2)
 
         if shape == "square":
-            c.add_ref(gf.components.rectangle(size=(new_d, new_d), layer=layer, centered=True))
+            c.add_ref(
+                gf.components.rectangle(size=(new_d, new_d), layer=layer, centered=True)
+            )
         elif shape == "circle":
             c.add_ref(gf.components.circle(radius=new_d / 2, layer=layer))
         elif shape == "octagon":
@@ -90,6 +101,7 @@ def bondpad(
     c.info["diameter"] = diameter
     c.info["top_metal"] = layer_top_metal
     return c
+
 
 @gf.cell
 def bondpad_array(

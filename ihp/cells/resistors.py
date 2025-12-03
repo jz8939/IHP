@@ -4,7 +4,14 @@ import gdsfactory as gf
 from gdsfactory import Component
 from gdsfactory.typings import LayerSpec
 
-def add_rect(component, size: tuple[float, float], layer: LayerSpec, origin: tuple[float, float], centered: bool = False):
+
+def add_rect(
+    component,
+    size: tuple[float, float],
+    layer: LayerSpec,
+    origin: tuple[float, float],
+    centered: bool = False,
+):
     """Create rectangle, add ref to component and move to origin, return ref."""
     rect = gf.components.rectangle(size=size, layer=layer, centered=centered)
     ref = component.add_ref(rect)
@@ -111,12 +118,32 @@ def rsil(
 
     # Metal pads (pin then metal1)
     for ly in (layer_metal1_pin, layer_metal1):
-        add_rect(c, size=(metal_pad_dx, metal_pad_dy), layer=ly, origin=(metal_pad_left_x, metal_pad_upper_y))
-        add_rect(c, size=(metal_pad_dx, metal_pad_dy), layer=ly, origin=(metal_pad_left_x, metal_pad_lower_y))
+        add_rect(
+            c,
+            size=(metal_pad_dx, metal_pad_dy),
+            layer=ly,
+            origin=(metal_pad_left_x, metal_pad_upper_y),
+        )
+        add_rect(
+            c,
+            size=(metal_pad_dx, metal_pad_dy),
+            layer=ly,
+            origin=(metal_pad_left_x, metal_pad_lower_y),
+        )
 
     # Contacts (inside metal pads)
-    add_rect(c, size=(contact_dx, contact_dy), layer=layer_contact, origin=(contact_x, contact_upper_y))
-    add_rect(c, size=(contact_dx, contact_dy), layer=layer_contact, origin=(contact_x, contact_lower_y))
+    add_rect(
+        c,
+        size=(contact_dx, contact_dy),
+        layer=layer_contact,
+        origin=(contact_x, contact_upper_y),
+    )
+    add_rect(
+        c,
+        size=(contact_dx, contact_dy),
+        layer=layer_contact,
+        origin=(contact_x, contact_lower_y),
+    )
 
     # Blocking layer
     add_rect(c, size=(block_dx, block_dy), layer=layer_block, origin=block_origin)
@@ -145,14 +172,16 @@ def rsil(
     )
 
     # Metadata
-    c.info.update({
-        "model": model,
-        "dy": dy,
-        "dx": dx,
-        "resistance": resistance,
-        "sheet_resistance": SHEET_RESISTANCE,
-        "n_squares": n_squares,
-    })
+    c.info.update(
+        {
+            "model": model,
+            "dy": dy,
+            "dx": dx,
+            "resistance": resistance,
+            "sheet_resistance": SHEET_RESISTANCE,
+            "n_squares": n_squares,
+        }
+    )
 
     return c
 
@@ -265,13 +294,33 @@ def rppd(
     add_rect(c, size=gate_size, layer=layer_gate, origin=(0.0, -GAT_DY))
 
     # Contacts
-    add_rect(c, size=(contact_dx, contact_dy), layer=layer_contact, origin=(contact_left_x, contact_upper_y))
-    add_rect(c, size=(contact_dx, contact_dy), layer=layer_contact, origin=(contact_left_x, contact_lower_y))
+    add_rect(
+        c,
+        size=(contact_dx, contact_dy),
+        layer=layer_contact,
+        origin=(contact_left_x, contact_upper_y),
+    )
+    add_rect(
+        c,
+        size=(contact_dx, contact_dy),
+        layer=layer_contact,
+        origin=(contact_left_x, contact_lower_y),
+    )
 
     # Metal pads (pin + metal1)
     for ly in (layer_metal1_pin, layer_metal1):
-        add_rect(c, size=(metal_pad_dx, metal_pad_dy), layer=ly, origin=(metal_pad_left_x, metal_pad_upper_y))
-        add_rect(c, size=(metal_pad_dx, metal_pad_dy), layer=ly, origin=(metal_pad_left_x, metal_pad_lower_y))
+        add_rect(
+            c,
+            size=(metal_pad_dx, metal_pad_dy),
+            layer=ly,
+            origin=(metal_pad_left_x, metal_pad_upper_y),
+        )
+        add_rect(
+            c,
+            size=(metal_pad_dx, metal_pad_dy),
+            layer=ly,
+            origin=(metal_pad_left_x, metal_pad_lower_y),
+        )
 
     # Blocking layers
     for ly in (layer_block, layer_pSD):
@@ -304,14 +353,16 @@ def rppd(
     )
 
     # Metadata
-    c.info.update({
-        "model": model,
-        "dy": dy,
-        "dx": dx,
-        "resistance": resistance,
-        "sheet_resistance": SHEET_RESISTANCE,
-        "n_squares": n_squares,
-    })
+    c.info.update(
+        {
+            "model": model,
+            "dy": dy,
+            "dx": dx,
+            "resistance": resistance,
+            "sheet_resistance": SHEET_RESISTANCE,
+            "n_squares": n_squares,
+        }
+    )
 
     return c
 
@@ -424,13 +475,33 @@ def rhigh(
     add_rect(c, gate_size, layer_gate, origin=(0.0, -GAT_DY))
 
     # Contacts
-    add_rect(c, (contact_dx, contact_dy), layer_contact, origin=(contact_left_x, contact_upper_y))
-    add_rect(c, (contact_dx, contact_dy), layer_contact, origin=(contact_left_x, contact_lower_y))
+    add_rect(
+        c,
+        (contact_dx, contact_dy),
+        layer_contact,
+        origin=(contact_left_x, contact_upper_y),
+    )
+    add_rect(
+        c,
+        (contact_dx, contact_dy),
+        layer_contact,
+        origin=(contact_left_x, contact_lower_y),
+    )
 
     # Metal pads
     for ly in (layer_metal1_pin, layer_metal1):
-        add_rect(c, (metal_pad_dx, metal_pad_dy), ly, origin=(metal_pad_left_x, metal_pad_upper_y))
-        add_rect(c, (metal_pad_dx, metal_pad_dy), ly, origin=(metal_pad_left_x, metal_pad_lower_y))
+        add_rect(
+            c,
+            (metal_pad_dx, metal_pad_dy),
+            ly,
+            origin=(metal_pad_left_x, metal_pad_upper_y),
+        )
+        add_rect(
+            c,
+            (metal_pad_dx, metal_pad_dy),
+            ly,
+            origin=(metal_pad_left_x, metal_pad_lower_y),
+        )
 
     # Blocking 1
     for ly in (layer_block, layer_pSD, layer_nSD):
@@ -464,14 +535,16 @@ def rhigh(
     )
 
     # Metadata
-    c.info.update({
-        "model": model,
-        "dy": dy,
-        "dx": dx,
-        "resistance": resistance,
-        "sheet_resistance": SHEET_RESISTANCE,
-        "n_squares": n_squares,
-    })
+    c.info.update(
+        {
+            "model": model,
+            "dy": dy,
+            "dx": dx,
+            "resistance": resistance,
+            "sheet_resistance": SHEET_RESISTANCE,
+            "n_squares": n_squares,
+        }
+    )
 
     return c
 
