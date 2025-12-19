@@ -208,9 +208,12 @@ def rfcmim(
     cont_spacing_x = 0.185 # Contact spacing from PDK
     cont_spacing_y = 0.215 # Contact spacing from PDK
     cont_extension = 0.36 # Contact extension from PDK
+    psd_extra_extension = 0.03 # Additional extension for pSD layer
+    pwell_extension = 3.0
     cap_density = 1.5  # fF/um^2
     activ_external_extension = 5.6
     activ_internal_extension = 3.6
+    metal5_extension = 0.6
     shield_width = width + 4.0
     shield_length = length + 4.0
     bottom_plate_length = length + 2.0
@@ -418,19 +421,105 @@ def rfcmim(
     # ----------------
     c.add_polygon(
         [
-            (-activ_external_extension, width + activ_internal_extension),
-            (-activ_external_extension, -activ_external_extension),
-            (length + activ_external_extension, - activ_external_extension),
-            (length + activ_external_extension, width + activ_external_extension),
-            (-activ_external_extension, width + activ_external_extension),
-            (-activ_external_extension, width + activ_internal_extension),
-            (length + activ_internal_extension, width + activ_internal_extension),
-            (length + activ_internal_extension, -activ_internal_extension),
-            (-activ_internal_extension, -activ_internal_extension),
-            (-activ_internal_extension, width + activ_internal_extension),
+            (-activ_external_extension - psd_extra_extension, width + activ_internal_extension - psd_extra_extension),
+            (-activ_external_extension - psd_extra_extension, -activ_external_extension - psd_extra_extension),
+            (length + activ_external_extension + psd_extra_extension, - activ_external_extension - psd_extra_extension),
+            (length + activ_external_extension + psd_extra_extension, width + activ_external_extension + psd_extra_extension),
+            (-activ_external_extension - psd_extra_extension, width + activ_external_extension + psd_extra_extension),
+            (-activ_external_extension - psd_extra_extension, width + activ_internal_extension - psd_extra_extension),
+            (length + activ_internal_extension - psd_extra_extension, width + activ_internal_extension - psd_extra_extension),
+            (length + activ_internal_extension - psd_extra_extension, -activ_internal_extension + psd_extra_extension),
+            (-activ_internal_extension + psd_extra_extension, -activ_internal_extension + psd_extra_extension),
+            (-activ_internal_extension + psd_extra_extension, width + activ_internal_extension - psd_extra_extension),
         ],
         layer=layer_psd,
     )
+
+    # ----------------
+    # Metal 3
+    # ----------------
+    metal3_drawing = c << gf.components.rectangle(
+        size=(length + 2*activ_external_extension, width + 2*activ_external_extension),
+        layer=layer_metal3,
+    )
+    metal3_drawing.xmin = -activ_external_extension
+    metal3_drawing.ymin = -activ_external_extension
+
+    # ----------------
+    # PWell
+    # ----------------
+    pwell = c << gf.components.rectangle(
+        size=(length + 2*pwell_extension, width + 2*pwell_extension),
+        layer=layer_pwell,
+    )
+    pwell.xmin = -pwell_extension
+    pwell.ymin = -pwell_extension
+    # ----------------
+    # Metal 4
+    # ----------------
+    metal4_drawing = c << gf.components.rectangle(
+        size=(length + 2*activ_external_extension, width + 2*activ_external_extension),
+        layer=layer_metal4,
+    )
+    metal4_drawing.xmin = -activ_external_extension
+    metal4_drawing.ymin = -activ_external_extension
+
+    # ----------------
+    # Metal 5
+    # ----------------
+    metal5_drawing = c << gf.components.rectangle(
+        size=(length + 2*activ_external_extension, width + 2*activ_external_extension),
+        layer=layer_metal5,
+    )
+    metal5_drawing.xmin = -activ_external_extension
+    metal5_drawing.ymin = -activ_external_extension
+
+    metal5_internal = c << gf.components.rectangle(
+        size=(length + 2*metal5_extension, width + 2*metal5_extension),
+        layer=layer_metal5,
+    )
+    metal5_internal.xmin = -metal5_extension
+    metal5_internal.ymin = -metal5_extension
+    c.add_polygon(
+        [
+            (length + metal5_extension, width/2 + 1.5),
+            (length + metal5_extension, width/2 - 1.5),
+            (length + activ_external_extension, width/2 - 1.5),
+            (length + activ_external_extension, width/2 + 1.5),
+        ],
+        layer=layer_metal5,
+    )
+
+    metal5_pin = c << gf.components.rectangle(
+        size=(activ_external_extension - activ_internal_extension, 3.0),
+        layer=layer_metal5_pin,
+    )
+    metal5_pin.xmin = length + activ_internal_extension
+    metal5_pin.ymin = width/2 - 1.5
+
+    # ----------------
+    # Top Metal 1
+    # ----------------
+    top_metal1_drawing = c << gf.components.rectangle(
+        size=(length + 2*activ_external_extension, width + 2*activ_external_extension),
+        layer=layer_topmetal1,
+    )
+    top_metal1_drawing.xmin = -activ_external_extension
+    top_metal1_drawing.ymin = -activ_external_extension
+
+    top_metal1_internal = c << gf.components.rectangle(
+        size=(length - 2*cont_extension, width - 2*cont_extension),
+        layer=layer_topmetal1,
+    )
+    top_metal1_internal.xmin = cont_extension
+    top_metal1_internal.ymin = cont_extension
+
+    top_metal1_pin = c << gf.components.rectangle(
+        size=(activ_external_extension - activ_internal_extension, 3.0),
+        layer=layer_topmetal1_pin,
+    )
+    top_metal1_pin.xmin = -activ_external_extension
+    top_metal1_pin.ymin = width/2 - 1.5
 
     # Add ports
     c.add_port(
@@ -439,6 +528,24 @@ def rfcmim(
         width=activ_external_extension - activ_internal_extension,
         orientation=180,
         layer=layer_metal1_pin,
+        port_type="electrical",
+    )
+
+    c.add_port(
+        name="MINUS",
+        center=(length + activ_internal_extension/2 + activ_external_extension/2, width/2),
+        width=3.0,
+        orientation=0,
+        layer=layer_metal5_pin,
+        port_type="electrical",
+    )
+
+    c.add_port(
+        name="PLUS",
+        center=(- activ_internal_extension/2 - activ_external_extension/2, width/2),
+        width=3.0,
+        orientation=180,
+        layer=layer_topmetal1_pin,
         port_type="electrical",
     )
 
@@ -491,19 +598,17 @@ if __name__ == "__main__":
     # Test the components
     width = 6.99
     length = 8
-    c0 = cells2.cmim(width=width, length=length)  # original
-    polygons_original = c0.get_polygons()
-    c1 = cmim(width=width, length=length)  # New
-    polygons_new = c1.get_polygons()
-    # c = gf.grid([c0, c1], spacing=100)
+    # c0 = cells2.cmim(width=width, length=length)  # original
+    # c1 = cmim(width=width, length=length)  # New
+    # # c = gf.grid([c0, c1], spacing=100)
 
-    c = xor(c0, c1)
-    c.show()
+    # c = xor(c0, c1)
+    # c.show()
     # c0.show()
     # c1.show()
 
-    c0_rf = cells2.rfcmim()  # original
-    # c1_rf = rfcmim()  # New
+    c0_rf = cells2.rfcmim(width=width, length=length)  # original
+    c1_rf = rfcmim(width=width, length=length)  # New
     # c = gf.grid([c0, c1], spacing=100)
-    # c_rf = xor(c0_rf, c1_rf)
-    # c.show()
+    c_rf = xor(c0_rf, c1_rf)
+    c_rf.show()
