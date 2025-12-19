@@ -204,6 +204,10 @@ def rfcmim(
     via_dim = 0.42  # Extracted from PDK
     via_spacing = 0.44 # Extracted from PDK
     via_extension = 0.78 # Extracted from PDK
+    cont_dim = 0.16 # Contact dimension from PDK
+    cont_spacing_x = 0.185 # Contact spacing from PDK
+    cont_spacing_y = 0.215 # Contact spacing from PDK
+    cont_extension = 0.36 # Contact extension from PDK
     cap_density = 1.5  # fF/um^2
     activ_external_extension = 5.6
     activ_internal_extension = 3.6
@@ -275,7 +279,9 @@ def rfcmim(
             via_ref = c.add_ref(via)
             via_ref.move((x, y))
 
+    # ----------------
     # Active Drawing
+    # ----------------
     activ = c << gf.components.rectangle(
         size=(length + 2*activ_external_extension, width + 2*activ_external_extension),
         layer=layer_activ,
@@ -296,6 +302,116 @@ def rfcmim(
         ],
         layer=layer_activ,
     )
+
+    # ----------------
+    # Cont Drawing
+    # ----------------
+
+    # Top and bottom extension
+    n_cont_x = 1
+    n_cont_y = 1
+
+    top_length = n_cont_x * cont_dim + (n_cont_x - 1) * cont_spacing_x + 2 * cont_extension
+    top_width = n_cont_y * cont_dim + (n_cont_y - 1) * cont_spacing_y + 2 * cont_extension
+    # The addition of a grid point results in extension by via_dim + via_spacing
+    # This condition was found empirically to match the PDK layout
+
+    while top_length + cont_dim + cont_spacing_x < length + 2*activ_external_extension + 0.115:
+        n_cont_x += 1
+        top_length = n_cont_x * cont_dim + (n_cont_x - 1) * cont_spacing_x + 2 * cont_extension
+
+    while top_width + cont_dim + cont_spacing_y < activ_external_extension - activ_internal_extension + 0.115:
+        n_cont_y += 1
+        top_width = n_cont_y * cont_dim + (n_cont_y - 1) * cont_spacing_y + 2 * cont_extension
+
+    for i in range(n_cont_x):
+        for j in range(n_cont_y):
+            x = - activ_external_extension + cont_extension + i*(cont_dim + cont_spacing_x)
+            y = width + activ_internal_extension + cont_extension + j*(cont_dim + cont_spacing_y)
+            cont = gf.components.rectangle(
+                size=(cont_dim, cont_dim),
+                layer=layer_cont,
+            )
+            cont_ref = c.add_ref(cont)
+            cont_ref.move((x, y))
+
+            y = - activ_external_extension + cont_extension + j*(cont_dim + cont_spacing_y)
+            cont = gf.components.rectangle(
+                size=(cont_dim, cont_dim),
+                layer=layer_cont,
+            )
+            cont_ref = c.add_ref(cont)
+            cont_ref.move((x, y))
+
+    # Left and right extension, where the gaps between contacts are different than before
+    cont_spacing_x = 0.21 # Contact spacing from PDK
+    cont_spacing_y = 0.185 # Contact spacing from PDK
+    n_cont_x = 1
+    n_cont_y = 1
+
+    top_length = n_cont_x * cont_dim + (n_cont_x - 1) * cont_spacing_x + 2 * cont_extension
+    top_width = n_cont_y * cont_dim + (n_cont_y - 1) * cont_spacing_y + 2 * cont_extension
+    # The addition of a grid point results in extension by via_dim + via_spacing
+    # This condition was found empirically to match the PDK layout
+
+    while top_length + cont_dim + cont_spacing_x < activ_external_extension - activ_internal_extension:
+        n_cont_x += 1
+        top_length = n_cont_x * cont_dim + (n_cont_x - 1) * cont_spacing_x + 2 * cont_extension
+
+    while top_width + cont_dim + cont_spacing_y < width + 2*activ_internal_extension:
+        n_cont_y += 1
+        top_width = n_cont_y * cont_dim + (n_cont_y - 1) * cont_spacing_y + 2 * cont_extension
+
+    for i in range(n_cont_x):
+        for j in range(n_cont_y):
+            x = - activ_external_extension + cont_extension + i*(cont_dim + cont_spacing_x)
+            y = - activ_internal_extension + cont_extension + j*(cont_dim + cont_spacing_y)
+            cont = gf.components.rectangle(
+                size=(cont_dim, cont_dim),
+                layer=layer_cont,
+            )
+            cont_ref = c.add_ref(cont)
+            cont_ref.move((x, y))
+
+            if y < width/2 - 1.5 - cont_extension or y > width/2 + 1.5 + cont_extension:
+                x = length + activ_internal_extension + cont_extension + i*(cont_dim + cont_spacing_x)
+                cont = gf.components.rectangle(
+                    size=(cont_dim, cont_dim),
+                    layer=layer_cont,
+                )
+                cont_ref = c.add_ref(cont)
+                cont_ref.move((x, y))
+
+    # ----------------
+    # Metal 1
+    # ----------------
+    metal1_drawing = c << gf.components.rectangle(
+        size=(length + 2*activ_external_extension, width + 2*activ_external_extension),
+        layer=layer_metal1,
+    )
+    metal1_drawing.xmin = -activ_external_extension
+    metal1_drawing.ymin = -activ_external_extension
+
+    # ----------------
+    # Metal 1 pin
+    # ----------------
+    metal1_pin = c << gf.components.rectangle(
+        size=(length + 2*activ_external_extension, activ_external_extension - activ_internal_extension),
+        layer=layer_metal1_pin,
+    )
+    metal1_pin.xmin = -activ_external_extension
+    metal1_pin.ymin = -activ_external_extension
+
+    # Add ports
+    c.add_port(
+        name="TIE",
+        center=(length/2, -activ_internal_extension/2 - activ_external_extension / 2),
+        width=activ_external_extension - activ_internal_extension,
+        orientation=180,
+        layer=layer_metal1_pin,
+        port_type="electrical",
+    )
+
     # # Add ports
     # c.add_port(
     #     name="P1",
