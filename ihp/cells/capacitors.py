@@ -15,6 +15,7 @@ def cmim(
     layer_metal5: LayerSpec = "Metal5drawing",
     layer_mim: LayerSpec = "MIMdrawing",
     layer_via4: LayerSpec = "Via4drawing",
+    layer_via_mim: LayerSpec = "Vmimdrawing",
     layer_topmetal1: LayerSpec = "TopMetal1drawing",
     layer_topvia1: LayerSpec = "TopVia1drawing",
     layer_cap_mark: LayerSpec = "MemCapdrawing",
@@ -43,10 +44,10 @@ def cmim(
 
     # Design rules
     mim_min_size = 0.5
-    plate_enclosure = 0.2
-    via_enclosure = 0.1
-    cont_size = 0.26
-    cont_spacing = 0.36
+    via_dim = 0.42  # Extracted from PDK
+    via_spacing = 2*via_dim # Extracted from PDK
+    via_extension = via_dim # Extracted from PDK
+    bottom_plate_extension = 0.6 # Extracted from PDK
     cap_density = 1.5  # fF/um^2 (example value)
 
     # Validate dimensions
@@ -63,114 +64,81 @@ def cmim(
         capacitance = width * length * cap_density
 
     # Bottom plate (Metal4)
-    bottom_plate_width = width + 2 * plate_enclosure
-    bottom_plate_length = length + 2 * plate_enclosure
+    bottom_plate_width = width + 2 * bottom_plate_extension
+    bottom_plate_length = length + 2 * bottom_plate_extension
 
-    bottom_plate = gf.components.rectangle(
-        size=(bottom_plate_length, bottom_plate_width),
-        layer=layer_metal4,
-        centered=True,
+    bottom_plate = c << gf.components.rectangle(
+        size=(bottom_plate_width, bottom_plate_length),
+        layer=layer_metal5,
     )
-    c.add_ref(bottom_plate)
+    bottom_plate.xmin=-bottom_plate_extension
+    bottom_plate.ymin=-bottom_plate_extension
 
     # MIM dielectric layer
-    mim_layer = gf.components.rectangle(
-        size=(length, width),
+    mim_layer = c << gf.components.rectangle(
+        size=(width, length),
         layer=layer_mim,
-        centered=True,
     )
-    c.add_ref(mim_layer)
 
-    # Top plate (Metal5)
-    top_plate = gf.components.rectangle(
-        size=(length, width),
-        layer=layer_metal5,
-        centered=True,
-    )
-    c.add_ref(top_plate)
+    # The top plate is an extension of the via array, so we create it after the vias.
+    # First, the number of vias needs to be defined. They are squares of via_dim, and spacing via_spacing.
+    # Let's assume we have a grid of n_x by n_y vias. The top plate will extend this array by via_extension on each side.
+    # So the length of the top plate will be:
+    # L_top = n_x*via_dim + (n_x-1)*via_spacing + 2*via_extension = 3*n_x*via_dim, for spacing = 2*via_dim and extension = via_dim.
+    # The PDK gives the maximum vias for which the top plate dimensions do not exceed the insulator dimensions by more than 0.115um.
 
     # Via array for top plate connection
-    n_vias_x = int((length - 2 * via_enclosure - cont_size) / cont_spacing) + 1
-    n_vias_y = int((width - 2 * via_enclosure - cont_size) / cont_spacing) + 1
+    n_vias_x = 1
+    n_vias_y = 1
+
+    top_electrode_width = 3 * n_vias_x * via_dim
+    top_electrode_length = 3 * n_vias_y * via_dim
+
+    # This condition was found empirically to match the PDK layout
+    while top_electrode_width + 3*via_dim < width + 0.115:
+        n_vias_x += 1
+        top_electrode_width = 3 * n_vias_x * via_dim
+    while top_electrode_length + 3*via_dim < length + 0.115:
+        n_vias_y += 1
+        top_electrode_length = 3 * n_vias_y * via_dim
+
 
     for i in range(n_vias_x):
         for j in range(n_vias_y):
-            x = -length / 2 + via_enclosure + cont_size / 2 + i * cont_spacing
-            y = -width / 2 + via_enclosure + cont_size / 2 + j * cont_spacing
+            # The bottom left corner of the top electrode is at (width - top_electrode_width)/2 - 0.005, (length - top_electrode_length)/2 - 0.005
+            x = (width - top_electrode_width)/2 - 0.005 + via_extension + i*(via_dim + via_spacing)
+            y = (length - top_electrode_length)/2 - 0.005 + via_extension + j*(via_dim + via_spacing)
 
             via = gf.components.rectangle(
-                size=(cont_size, cont_size),
-                layer=layer_via4,
-                centered=True,
+                size=(via_dim, via_dim),
+                layer=layer_via_mim,
             )
             via_ref = c.add_ref(via)
             via_ref.move((x, y))
 
-    # Connection extensions for bottom plate
-    # Left extension
-    bottom_ext_left = gf.components.rectangle(
-        size=(plate_enclosure + 1.0, 1.0),
-        layer=layer_metal4,
-    )
-    bottom_ext_left_ref = c.add_ref(bottom_ext_left)
-    bottom_ext_left_ref.move((-(bottom_plate_length / 2), -0.5))
-
-    # Right extension for top plate
-    top_ext_right = gf.components.rectangle(
-        size=(1.0, 1.0),
-        layer=layer_metal5,
-    )
-    top_ext_right_ref = c.add_ref(top_ext_right)
-    top_ext_right_ref.move((length / 2, -0.5))
-
-    # Via to connect top plate extension to TopMetal1
-    top_via = gf.components.rectangle(
-        size=(0.9, 0.9),
-        layer=layer_topvia1,
-        centered=True,
-    )
-    top_via_ref = c.add_ref(top_via)
-    top_via_ref.move((length / 2 + 0.5, 0))
-
-    top_metal = gf.components.rectangle(
-        size=(1.2, 1.2),
+    # Top plate (Metal5)
+    top_plate = c << gf.components.rectangle(
+        size=(top_electrode_width, top_electrode_length),
         layer=layer_topmetal1,
-        centered=True,
     )
-    top_metal_ref = c.add_ref(top_metal)
-    top_metal_ref.move((length / 2 + 0.5, 0))
-
-    # Capacitor marker
-    cap_mark = gf.components.rectangle(
-        size=(bottom_plate_length + 0.5, bottom_plate_width + 0.5),
-        layer=layer_cap_mark,
-        centered=True,
-    )
-    c.add_ref(cap_mark)
-
-    # No metal filler region
-    no_fill = gf.components.rectangle(
-        size=(bottom_plate_length + 1.0, bottom_plate_width + 1.0),
-        layer=layer_nofill,
-        centered=True,
-    )
-    c.add_ref(no_fill)
+    top_plate.xmin = (width - top_electrode_width)/2 - 0.005
+    top_plate.ymin = (length - top_electrode_length)/2 - 0.005
 
     # Add ports
     c.add_port(
-        name="P1",
-        center=(-(bottom_plate_length / 2 + 0.5), 0),
-        width=1.0,
-        orientation=180,
-        layer=layer_metal4,
+        name="B",
+        center=(width/2, length/2),
+        width=width + 2 * bottom_plate_extension,
+        orientation=0,
+        layer=layer_metal5,
         port_type="electrical",
     )
 
     c.add_port(
-        name="P2",
-        center=(length / 2 + 0.5, 0),
-        width=1.0,
-        orientation=0,
+        name="T",
+        center=(top_plate.x, top_plate.y),
+        width=top_electrode_width,
+        orientation=180,
         layer=layer_topmetal1,
         port_type="electrical",
     )
@@ -406,14 +374,21 @@ if __name__ == "__main__":
     PDK.activate()
 
     # Test the components
-    c0 = cells2.cmim()  # original
-    c1 = cmim()  # New
+    width = 6.99
+    length = 8
+    c0 = cells2.cmim(width=width, length=length)  # original
+    polygons_original = c0.get_polygons()
+    c1 = cmim(width=width, length=length)  # New
+    polygons_new = c1.get_polygons()
     # c = gf.grid([c0, c1], spacing=100)
+
     c = xor(c0, c1)
     c.show()
+    # c0.show()
+    # c1.show()
 
-    # c0 = fixed.rfcmim()  # original
-    # c1 = rfcmim()  # New
-    # # c = gf.grid([c0, c1], spacing=100)
-    # c = xor(c0, c1)
+    # c0_rf = cells2.rfcmim()  # original
+    # c1_rf = rfcmim()  # New
+    # c = gf.grid([c0, c1], spacing=100)
+    # c_rf = xor(c0_rf, c1_rf)
     # c.show()
