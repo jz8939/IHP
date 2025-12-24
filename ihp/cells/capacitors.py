@@ -1,5 +1,7 @@
 """Capacitor components for IHP PDK."""
 
+from math import floor
+
 import gdsfactory as gf
 from gdsfactory import Component
 from gdsfactory.typings import LayerSpec
@@ -148,107 +150,35 @@ def cmim(
     return c
 
 
-def spacing_update_order(n_spacings: int, n_increments: int) -> list[int]:
-    """
-    The function determines which spacing slots (indices) should receive
-    increments. The last spacing always gets incremented first.
-    Then the middle, depending on whether the number of increments is odd or even.
-    The largest step (gap) between increments is calculated.
-    If the middle was increased, then the next increases start happening one step away.
-    If the middle was not increased, then the increases start step//2 away from it.
-
-    Parameters
-    ----------
-    n_spacings : int
-        Total number of spacing elements, equal to the number of pins -1.
-    n_increments : int
-        Number of spacing increments to distribute, in order for the distance from the edges to be fixed on all sides.
-
-    Returns
-    -------
-    list[int]
-        List of spacing indices indicating where increments should be applied.
-    """
-    if n_increments == 0:
-        return []
-
-    chosen = [n_spacings - 1]
-    if n_increments == 1:
-        return chosen
-
-    n_increments -= 1
-    odd = n_spacings % 2 == 1
-
-    # Centers in index space
-    if odd:
-        left = right = n_spacings // 2
+def fix(value):
+    if type(value) is float:
+        return int(floor(value))
     else:
-        left = n_spacings // 2 - 1
-        right = left + 1
-
-    center_appended = False
-    # Optional center
-    if n_increments % 2 == 1:
-        chosen.append(left)
-        n_increments -= 1
-        center_appended = True
-        if n_increments == 0:
-            return chosen
-
-    k = n_increments // 2
-
-    # Maximum step IGNORING index 0
-    step = min(left // k, (n_spacings - 1 - right) // k)
-    step = max(step, 1)
-
-    # Try normal symmetric placement
-    def generate(start_offset):
-        indices = []
-        for j in range(k):
-            l_idx = left - (start_offset + j * step)
-            r_idx = right + (start_offset + j * step)
-            indices.extend([l_idx, r_idx])
-        return indices
-
-    if center_appended:
-        start_offset = step
-    else:
-        start_offset = step // 2
-    # Mode A: start at ±step
-    candidates = generate(start_offset=start_offset)
-    if all(i != 0 for i in candidates):
-        chosen.extend(candidates)
-        return chosen
-
-    # Guaranteed fallback (should never fail in valid geometry)
-    for j in range(1, k + 1):
-        chosen.append(left - j)
-        chosen.append(right + j)
-
-    return chosen
+        return value
 
 
-def pin_placement(
+def tog(x: float) -> float:
+    SG13_GRID = 0.005
+    SG13_EPSILON = 0.001
+    SG13_IGRID = 1.0 / SG13_GRID
+    return fix(x * SG13_IGRID + SG13_EPSILON) * SG13_GRID
+
+
+def contactArray(
     c: gf.Component,
     length: float,
     width: float,
-    pin_dimension: float,
-    pin_spacing_x: float,
-    pin_spacing_y: float,
-    pin_extension: float,
-    bottom_left_x: float,
-    bottom_left_y: float,
-    pin_layer: LayerSpec,
+    contactLayer: LayerSpec,
+    xl: float,
+    yl: float,
+    ox: float,
+    oy: float,
+    ws: float,
+    ds: float,
 ) -> None:
     """
-    This function places a 2D pin array on a rectangle within a component's layer,
-    so that the distance of the external rows and columns from the edges is fixed.
-    First, the number of pins of specified dimension, spacing, and distance from edges are defined.
-
-    The goal is for all external rows and columns to have a fixed distance from the edges.
-    So the next step is to increase, separately, the spacings in x and y direction, in order to bring the last row and column closer to the edge.
-
-    Finally, if there is still space left, some of the spacings are increased by 0.005 until the goal is met.
+    Distributes as many square contact of size ws, into a rectangle of (length, width), with distances >= ds.
+    The distances are adjusted so that the outer contacts have fixed distances ox and oy from the sides of the rectangle.
 
     Parameters
     ----------
@@ -258,98 +188,63 @@ def pin_placement(
         Length (x-dimension) of the region which contains the pin array.
     width : float
         Width (y-dimension) of the region which contains the pin array.
-    pin_dimension : float
-        Dimension, x and y, of the individual square pin.
-    pin_spacing_x: float
-        Distance between the right edge of pin in column n, with the left edge of pin in column n+1.
-    pin_spacing_y: float
-        Distance between the top edge of pin in row m, with the bottom edge of pin in column m+1.
-    pin_extension: float
-        Distance between first column from left edge, last column from right edge, first (bottom) row and bottom edge, and last (top) row and top edge.
-    bottom_left_x: float
+    xl: float
         Minimum x-coordinate of the array that contains the pins.
-    bottom_left_y: float
+    yl: float
         Minimum y-coordinate of the array that contains the pins.
+    ox: float
+        Distance from edge in x direction.
+    oy: float
+        Distance from edge in y direction.
+    ws : float
+        Dimension, x and y, of the individual square contact.
+    ds: float
+        Distance between first column from left edge, last column from right edge, first (bottom) row and bottom edge, and last (top) row and top edge.
 
     """
-    n_pin_x = 1
-    n_pin_y = 1
+    eps = 0.001
 
-    pin_array_length = (
-        n_pin_x * pin_dimension + (n_pin_x - 1) * pin_spacing_x + 2 * pin_extension
-    )
-    pin_array_width = (
-        n_pin_y * pin_dimension + (n_pin_y - 1) * pin_spacing_y + 2 * pin_extension
-    )
+    nx = floor((length - ox * 2 + ds) / (ws + ds) + eps)
 
-    while pin_array_length + pin_dimension + pin_spacing_x <= length:
-        n_pin_x += 1
-        pin_array_length = (
-            n_pin_x * pin_dimension + (n_pin_x - 1) * pin_spacing_x + 2 * pin_extension
-        )
-    # As long as the expansion is still within the limits
-    while pin_array_length + (n_pin_x - 1) * 0.005 <= length:
-        pin_spacing_x += 0.005
-        pin_array_length = (
-            n_pin_x * pin_dimension + (n_pin_x - 1) * pin_spacing_x + 2 * pin_extension
-        )
+    dsx = 0
+    if nx == 1:
+        dsx = 0
+    else:
+        dsx = (length - ox * 2 - ws * nx) / (nx - 1)
 
-    while pin_array_width + pin_dimension + pin_spacing_y <= width:
-        n_pin_y += 1
-        pin_array_width = (
-            n_pin_y * pin_dimension + (n_pin_y - 1) * pin_spacing_y + 2 * pin_extension
-        )
-    while pin_array_width + (n_pin_y - 1) * 0.005 <= width:
-        pin_spacing_y += 0.005
-        pin_array_width = (
-            n_pin_y * pin_dimension + (n_pin_y - 1) * pin_spacing_y + 2 * pin_extension
-        )
+    ny = floor((width - oy * 2 + ds) / (ws + ds) + eps)
 
-    slack_x = round(length - pin_array_length, 3)
-    slack_y = round(width - pin_array_width, 3)
+    dsy = 0
+    if ny == 1:
+        dsy = 0
+    else:
+        dsy = (width - oy * 2 - ws * ny) / (ny - 1)
 
-    step = 0.005
-    n_spacings_x = n_pin_x - 1
-    spacings_x = [pin_spacing_x] * n_spacings_x
-    n_spacings_y = n_pin_y - 1
-    spacings_y = [pin_spacing_y] * n_spacings_y
+    x = 0
+    if nx == 1:
+        x = (length - ws) / 2
+    else:
+        x = ox
 
-    steps_x = int(round(slack_x / step))
-    order_x = spacing_update_order(n_spacings_x, steps_x)
-    idx = 0
-    for _ in range(steps_x):
-        spacings_x[order_x[idx]] += step
-        idx = (idx + 1) % len(order_x)
-    steps_y = int(round(slack_y / step))
-    order_y = spacing_update_order(n_spacings_y, steps_y)
-    idx = 0
-    for _ in range(steps_y):
-        spacings_y[order_y[idx]] += step
-        idx = (idx + 1) % len(order_y)
+    for _ in range(int(nx)):
+        # for(i=1; i<=nx; i++) {
+        y = 0
+        if ny == 1:
+            y = (width - ws) / 2
+        else:
+            y = oy
 
-    spacings_x.insert(0, 0)  # First via has no spacing before it
-    spacings_y.insert(0, 0)  # First via has no spacing before it
-
-    for i in range(n_pin_x):
-        for j in range(n_pin_y):
-            x = (
-                bottom_left_x
-                + pin_extension
-                + i * pin_dimension
-                + sum(spacings_x[: i + 1])
+        for _ in range(int(ny)):
+            # for(j=1; j<=ny; j++) {
+            contact_ref = c << gf.components.rectangle(
+                size=(ws, ws),
+                layer=contactLayer,
             )
-            y = (
-                bottom_left_y
-                + pin_extension
-                + j * pin_dimension
-                + sum(spacings_y[: j + 1])
-            )
-            pin = gf.components.rectangle(
-                size=(pin_dimension, pin_dimension),
-                layer=pin_layer,
-            )
-            pin_ref = c.add_ref(pin)
-            pin_ref.move((x, y))
+            contact_ref.move((tog(x) + xl, tog(y) + yl))
+
+            y = y + ws + dsy
+
+        x = x + ws + dsx
 
 
 @gf.cell
@@ -378,7 +273,6 @@ def rfcmim(
     via_extension = 0.78  # Extracted from PDK
     cont_size = 0.16  # Contact dimension from PDK
     cont_dist = 0.18  # Contact spacing from PDK
-    # tm_over = 0.42
 
     mim_over = 0.6
     via_over = 0.36  # Contact extension from PDK
@@ -430,17 +324,17 @@ def rfcmim(
     # The PDK gives the maximum vias for which the top plate dimensions do not exceed the insulator dimensions by more than 0.115um.
 
     # 1 Vias
-    pin_placement(
-        c,
-        length,
-        width,
-        via_size,
-        via_dist,
-        via_dist,
-        via_extension,
-        0,
-        0,
-        layer_via_mim,
+    contactArray(
+        c=c,
+        length=length,
+        width=width,
+        contactLayer=layer_via_mim,
+        xl=0,
+        yl=0,
+        ox=via_extension,
+        oy=via_extension,
+        ws=via_size,
+        ds=via_dist,
     )
 
     # 2 MIM dielectric layer
@@ -650,72 +544,70 @@ def rfcmim(
     )
 
     # Top extension
-    pin_placement(
-        c,
-        length + 2 * activ_external_extension,
-        activ_external_extension - activ_internal_extension,
-        cont_size,
-        cont_dist,
-        cont_dist,
-        via_over,
-        -activ_external_extension,
-        width + activ_internal_extension,
-        layer_cont,
+    contactArray(
+        c=c,
+        length=length + 2 * activ_external_extension,
+        width=activ_external_extension - activ_internal_extension,
+        contactLayer=layer_cont,
+        xl=-activ_external_extension,
+        yl=width + activ_internal_extension,
+        ox=via_over,
+        oy=via_over,
+        ws=cont_size,
+        ds=cont_dist,
     )
     # Bottom extension
-    pin_placement(
-        c,
-        length + 2 * activ_external_extension,
-        activ_external_extension - activ_internal_extension,
-        cont_size,
-        cont_dist,
-        cont_dist,
-        via_over,
-        -activ_external_extension,
-        -activ_external_extension,
-        layer_cont,
+    contactArray(
+        c=c,
+        length=length + 2 * activ_external_extension,
+        width=activ_external_extension - activ_internal_extension,
+        contactLayer=layer_cont,
+        xl=-activ_external_extension,
+        yl=-activ_external_extension,
+        ox=via_over,
+        oy=via_over,
+        ws=cont_size,
+        ds=cont_dist,
     )
-
     # Left extension
-    pin_placement(
-        c,
-        activ_external_extension - activ_internal_extension,
-        width + 2 * activ_internal_extension,
-        cont_size,
-        cont_dist,
-        cont_dist,
-        via_over,
-        -activ_external_extension,
-        -activ_internal_extension,
-        layer_cont,
+    contactArray(
+        c=c,
+        length=activ_external_extension - activ_internal_extension,
+        width=width + 2 * activ_internal_extension,
+        contactLayer=layer_cont,
+        xl=-activ_external_extension,
+        yl=-activ_internal_extension,
+        ox=via_over,
+        oy=via_over,
+        ws=cont_size,
+        ds=cont_dist,
     )
     # Right bottom extension
-    pin_placement(
-        c,
-        activ_external_extension - activ_internal_extension,
-        width / 2 + activ_internal_extension - feed_width / 2,
-        cont_size,
-        cont_dist,
-        cont_dist,
-        via_over,
-        length + activ_internal_extension,
-        -activ_internal_extension,
-        layer_cont,
+    contactArray(
+        c=c,
+        length=activ_external_extension - activ_internal_extension,
+        width=width / 2 + activ_internal_extension - feed_width / 2,
+        contactLayer=layer_cont,
+        xl=length + activ_internal_extension,
+        yl=-activ_internal_extension,
+        ox=via_over,
+        oy=via_over,
+        ws=cont_size,
+        ds=cont_dist,
     )
     # Right top extension
-    pin_placement(
-        c,
-        activ_external_extension - activ_internal_extension,
-        width / 2 + activ_internal_extension - feed_width / 2,
-        cont_size,
-        cont_dist,
-        cont_dist,
-        via_over,
-        length + activ_internal_extension,
-        width / 2 + feed_width / 2,
-        layer_cont,
+    contactArray(
+        c=c,
+        length=activ_external_extension - activ_internal_extension,
+        width=width / 2 + activ_internal_extension - feed_width / 2,
+        contactLayer=layer_cont,
+        xl=length + activ_internal_extension,
+        yl=width / 2 + feed_width / 2,
+        ox=via_over,
+        oy=via_over,
+        ws=cont_size,
+        ds=cont_dist,
     )
-
     # ----------------
     # Metal 1 pin
     # ----------------
