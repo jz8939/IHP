@@ -1,15 +1,14 @@
 """Capacitor components for IHP PDK."""
 
+import math
+from math import floor
+
 import gdsfactory as gf
 from gdsfactory import Component
 from gdsfactory.typings import LayerSpec, LayerSpecs
 
-import math
+Rect = tuple[float, float, float, float]
 
-from math import floor
-from typing import List, Tuple
-
-Rect = Tuple[float, float, float, float]
 
 # Logic taken from original IHP rfcmim contact array
 def add_contact_array(
@@ -25,8 +24,8 @@ def add_contact_array(
     layer_cont: LayerSpec = "Contdrawing",
     *,
     eps: float = 1e-9,
-) -> List[Rect]:
-    placed: List[Rect] = []
+) -> list[Rect]:
+    placed: list[Rect] = []
 
     width = x_max - x_min
     height = y_max - y_min
@@ -66,22 +65,32 @@ def add_contact_array(
         rel_x = x_offset
 
     # place columns
-    for col in range(nx):
+    for _col in range(nx):
         # initial y position *relative* to y_min for each column
         if ny == 1:
             rel_y = (height - contact_size) / 2.0
         else:
             rel_y = y_offset
 
-        for row in range(ny):
+        for _row in range(ny):
             x0 = x_min + rel_x
             y0 = y_min + rel_y
             x1 = x0 + contact_size
             y1 = y0 + contact_size
 
             # safety: ensure the contact fully fits into the box (mirror reference strictness)
-            if x1 <= x_max + eps and y1 <= y_max + eps and x0 + eps >= x_min and y0 + eps >= y_min:
-                add_rect(c, size=(contact_size, contact_size), layer=layer_cont, origin=(x0, y0))
+            if (
+                x1 <= x_max + eps
+                and y1 <= y_max + eps
+                and x0 + eps >= x_min
+                and y0 + eps >= y_min
+            ):
+                add_rect(
+                    c,
+                    size=(contact_size, contact_size),
+                    layer=layer_cont,
+                    origin=(x0, y0),
+                )
                 placed.append((x0, y0, x1, y1))
 
             # step to next row
@@ -93,12 +102,19 @@ def add_contact_array(
     return placed
 
 
-def add_rect(component, size: tuple[float, float], layer: LayerSpec, origin: tuple[float, float], centered: bool = False):
+def add_rect(
+    component,
+    size: tuple[float, float],
+    layer: LayerSpec,
+    origin: tuple[float, float],
+    centered: bool = False,
+):
     """Create rectangle, add ref to component and move to origin, return ref."""
     rect = gf.components.rectangle(size=size, layer=layer, centered=centered)
     ref = component.add_ref(rect)
     ref.move(origin)
     return ref
+
 
 def place_vmim_grid(
     component,
@@ -108,28 +124,38 @@ def place_vmim_grid(
     VMIM_TILE_GAP: float = 0.84,
     VMIM_TILE_LENGTH: float = 0.42,
     GRID_STEP: float = 0.005,
-    layer_vmim: LayerSpec = "Vmimdrawing"
+    layer_vmim: LayerSpec = "Vmimdrawing",
 ):
     # Calculate how many tiles fit in X and Y
     tile_pitch = VMIM_TILE_GAP + VMIM_TILE_LENGTH
     n_tiles_x = int(
         max(
-            math.floor((width - 2 * VMIM_EDGE_CLEARANCE + VMIM_TILE_GAP) / (tile_pitch)),
+            math.floor(
+                (width - 2 * VMIM_EDGE_CLEARANCE + VMIM_TILE_GAP) / (tile_pitch)
+            ),
             0,
         )
     )
     n_tiles_y = int(
         max(
-            math.floor((length - 2 * VMIM_EDGE_CLEARANCE + VMIM_TILE_GAP) / (tile_pitch)),
+            math.floor(
+                (length - 2 * VMIM_EDGE_CLEARANCE + VMIM_TILE_GAP) / (tile_pitch)
+            ),
             0,
         )
     )
 
     # Compute occupied size of the tile array (including gaps and the edge overlaps)
-    occupied_x = (n_tiles_x * (
-        tile_pitch) - VMIM_TILE_GAP) + 2 * VMIM_EDGE_CLEARANCE if n_tiles_x > 0 else 0.0
-    occupied_y = (n_tiles_y * (
-        tile_pitch) - VMIM_TILE_GAP) + 2 * VMIM_EDGE_CLEARANCE if n_tiles_y > 0 else 0.0
+    occupied_x = (
+        (n_tiles_x * (tile_pitch) - VMIM_TILE_GAP) + 2 * VMIM_EDGE_CLEARANCE
+        if n_tiles_x > 0
+        else 0.0
+    )
+    occupied_y = (
+        (n_tiles_y * (tile_pitch) - VMIM_TILE_GAP) + 2 * VMIM_EDGE_CLEARANCE
+        if n_tiles_y > 0
+        else 0.0
+    )
 
     # Offsets to center tile array inside the MIM plate, snapped to grid
     x_offset = round(((width - occupied_x) / 2.0) / GRID_STEP) * GRID_STEP - 0.005
@@ -142,7 +168,7 @@ def place_vmim_grid(
     for y_iter in range(n_tiles_y):
         y_current = y_start + y_iter * tile_pitch
         x_current = x_start
-        for x_iter in range(n_tiles_x):
+        for _x_iter in range(n_tiles_x):
             add_rect(
                 component,
                 size=(VMIM_TILE_LENGTH, VMIM_TILE_LENGTH),
@@ -290,11 +316,23 @@ def cmim(
 
     # Draw Vmim layer
     x_start, y_start, n_tiles_x, n_tiles_y = place_vmim_grid(
-        c, width, length, VMIM_EDGE_CLEARANCE, VMIM_TILE_GAP, VMIM_TILE_LENGTH, GRID_STEP, layer_vmim)
+        c,
+        width,
+        length,
+        VMIM_EDGE_CLEARANCE,
+        VMIM_TILE_GAP,
+        VMIM_TILE_LENGTH,
+        GRID_STEP,
+        layer_vmim,
+    )
 
     # Derive coordinates of top right corner
-    metal_1_x2 = x_start + (n_tiles_x - 1) * tile_pitch + VMIM_TILE_LENGTH + VMIM_TILE_GAP / 2.0
-    metal_1_y2 = y_start + (n_tiles_y - 1) * tile_pitch + VMIM_TILE_LENGTH + VMIM_TILE_GAP / 2.0
+    metal_1_x2 = (
+        x_start + (n_tiles_x - 1) * tile_pitch + VMIM_TILE_LENGTH + VMIM_TILE_GAP / 2.0
+    )
+    metal_1_y2 = (
+        y_start + (n_tiles_y - 1) * tile_pitch + VMIM_TILE_LENGTH + VMIM_TILE_GAP / 2.0
+    )
 
     # Derive coordinates of left bottom right corner
     metal_1_x1 = x_start - VMIM_TILE_GAP / 2.0
@@ -319,7 +357,10 @@ def cmim(
         port_type="electrical",
     )
 
-    minus_center = (-METAL_5_MIM_MARGIN + metal_5_size_x / 2.0, -METAL_5_MIM_MARGIN + metal_5_size_y / 2.0)
+    minus_center = (
+        -METAL_5_MIM_MARGIN + metal_5_size_x / 2.0,
+        -METAL_5_MIM_MARGIN + metal_5_size_y / 2.0,
+    )
     c.add_port(
         name="MINUS",
         center=minus_center,
@@ -337,7 +378,7 @@ def cmim(
             "mim_length": length,
             "mim_width": width,
             "vmim_tile_length": VMIM_TILE_LENGTH,
-            "n_vmim_tiles": (n_tiles_x, n_tiles_y)
+            "n_vmim_tiles": (n_tiles_x, n_tiles_y),
         }
     )
 
@@ -445,7 +486,10 @@ def rfcmim(
     # No QRC layers
     no_qrc_width = 2 * (MIM_PWELL_MARGIN + NO_QRC_PWELL_MARGIN) + width
     no_qrc_length = 2 * (MIM_PWELL_MARGIN + NO_QRC_PWELL_MARGIN) + length
-    no_qrc_corner = (-MIM_PWELL_MARGIN - NO_QRC_PWELL_MARGIN, -MIM_PWELL_MARGIN - NO_QRC_PWELL_MARGIN)
+    no_qrc_corner = (
+        -MIM_PWELL_MARGIN - NO_QRC_PWELL_MARGIN,
+        -MIM_PWELL_MARGIN - NO_QRC_PWELL_MARGIN,
+    )
     for layer in layers_no_qrc:
         add_rect(c, (no_qrc_width, no_qrc_length), layer, origin=no_qrc_corner)
 
@@ -455,7 +499,10 @@ def rfcmim(
     metal_5_corner = (-MIM_METAL_5_MARGIN, -MIM_METAL_5_MARGIN)
     add_rect(c, (metal_5_width, metal_5_length), layer_metal5, origin=metal_5_corner)
 
-    metal5_feed_origin = (width + MIM_METAL_5_MARGIN, (length - METAL_1_PAD_LENGTH) / 2.0)
+    metal5_feed_origin = (
+        width + MIM_METAL_5_MARGIN,
+        (length - METAL_1_PAD_LENGTH) / 2.0,
+    )
     metal5_feed_size = (RING_OUTER_MARGIN - MIM_METAL_5_MARGIN, METAL_1_PAD_LENGTH)
     add_rect(c, size=metal5_feed_size, layer=layer_metal5, origin=metal5_feed_origin)
 
@@ -480,10 +527,23 @@ def rfcmim(
     metal_1_length = length - 2 * MIM_METAL_1_MARGIN
     metal_1_corner = (MIM_METAL_1_MARGIN, MIM_METAL_1_MARGIN)
     metal_1_pad_width = MIM_PWELL_MARGIN + NO_QRC_PWELL_MARGIN + MIM_METAL_1_MARGIN
-    metal_1_pad_corner = (- MIM_PWELL_MARGIN - NO_QRC_PWELL_MARGIN, (length - METAL_1_PAD_LENGTH)  / 2)
+    metal_1_pad_corner = (
+        -MIM_PWELL_MARGIN - NO_QRC_PWELL_MARGIN,
+        (length - METAL_1_PAD_LENGTH) / 2,
+    )
 
-    add_rect(c, size=(metal_1_width, metal_1_length), layer=layer_topmetal1, origin=metal_1_corner)
-    add_rect(c, size=(metal_1_pad_width, METAL_1_PAD_LENGTH), layer=layer_topmetal1, origin=metal_1_pad_corner)
+    add_rect(
+        c,
+        size=(metal_1_width, metal_1_length),
+        layer=layer_topmetal1,
+        origin=metal_1_corner,
+    )
+    add_rect(
+        c,
+        size=(metal_1_pad_width, METAL_1_PAD_LENGTH),
+        layer=layer_topmetal1,
+        origin=metal_1_pad_corner,
+    )
 
     # Psd and activ layers
     add_margin_ring(
@@ -494,7 +554,7 @@ def rfcmim(
         inner_margin=PSD_INNER_MARGIN,
         layer=layer_psd,
         metal_1_pad_length=METAL_1_PAD_LENGTH,
-        cutout=False
+        cutout=False,
     )
 
     add_margin_ring(
@@ -505,7 +565,7 @@ def rfcmim(
         inner_margin=ACTIV_INNER_MARGIN,
         layer=layer_activ,
         metal_1_pad_length=METAL_1_PAD_LENGTH,
-        cutout=True
+        cutout=True,
     )
 
     # Metal1 layer
@@ -517,24 +577,34 @@ def rfcmim(
         inner_margin=RING_INNER_MARGIN,
         layer=layer_metal1,
         metal_1_pad_length=METAL_1_PAD_LENGTH,
-        cutout=True
+        cutout=True,
     )
 
     # Create Metal5 pin at the right
-    metal5_feed_origin = (width +  RING_INNER_MARGIN, (length - METAL_1_PAD_LENGTH) / 2.0)
+    metal5_feed_origin = (
+        width + RING_INNER_MARGIN,
+        (length - METAL_1_PAD_LENGTH) / 2.0,
+    )
     metal5_feed_size = (RING_OUTER_MARGIN - RING_INNER_MARGIN, METAL_1_PAD_LENGTH)
     add_rect(c, size=metal5_feed_size, layer=layer_metal5, origin=metal5_feed_origin)
-    add_rect(c, size=metal5_feed_size, layer=layer_metal5_pin, origin=metal5_feed_origin)
+    add_rect(
+        c, size=metal5_feed_size, layer=layer_metal5_pin, origin=metal5_feed_origin
+    )
 
     # Metal1 pin
     metal1_pin_origin = (-RING_OUTER_MARGIN, -RING_OUTER_MARGIN)
-    metal1_pin_size = (width + 2 * RING_OUTER_MARGIN, RING_OUTER_MARGIN - RING_INNER_MARGIN)
+    metal1_pin_size = (
+        width + 2 * RING_OUTER_MARGIN,
+        RING_OUTER_MARGIN - RING_INNER_MARGIN,
+    )
     add_rect(c, size=metal1_pin_size, layer=layer_metal1_pin, origin=metal1_pin_origin)
 
     # TopMetal1 pin
     top_metal1_origin = (-RING_OUTER_MARGIN, (length - METAL_1_PAD_LENGTH) / 2.0)
     top_metal1_size = (RING_OUTER_MARGIN - RING_INNER_MARGIN, METAL_1_PAD_LENGTH)
-    add_rect(c, size=top_metal1_size, layer=layer_topmetal1_pin, origin=top_metal1_origin)
+    add_rect(
+        c, size=top_metal1_size, layer=layer_topmetal1_pin, origin=top_metal1_origin
+    )
 
     # Cont layer
     # Right vertical – lower section
@@ -609,7 +679,7 @@ def rfcmim(
 
     # Add ports
     # Left port
-    left_port_center = (- (RING_OUTER_MARGIN - 1.0), (length + METAL_1_PAD_LENGTH) / 2.0)
+    left_port_center = (-(RING_OUTER_MARGIN - 1.0), (length + METAL_1_PAD_LENGTH) / 2.0)
     c.add_port(
         name="P1",
         center=left_port_center,
@@ -620,7 +690,10 @@ def rfcmim(
     )
 
     # Right port
-    right_port_center = (length + (RING_OUTER_MARGIN - 1.0), (length + METAL_1_PAD_LENGTH) / 2.0)
+    right_port_center = (
+        length + (RING_OUTER_MARGIN - 1.0),
+        (length + METAL_1_PAD_LENGTH) / 2.0,
+    )
     c.add_port(
         name="P2",
         center=right_port_center,
@@ -631,7 +704,7 @@ def rfcmim(
     )
 
     # Bottom port
-    bottom_port_center = (length / 2.0, - (RING_OUTER_MARGIN - 1.0))
+    bottom_port_center = (length / 2.0, -(RING_OUTER_MARGIN - 1.0))
     c.add_port(
         name="GND",
         center=bottom_port_center,
@@ -656,7 +729,6 @@ if __name__ == "__main__":
     from gdsfactory.difftest import xor
 
     from ihp import PDK, cells2
-    from ihp.cells import fixed
 
     PDK.activate()
 
