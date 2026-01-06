@@ -980,6 +980,8 @@
         "Metal4.pin": "50, 2",
         "Metal4.net": "50, 3",
         "Metal4.boundary": "50, 4",
+        "HeatTrans.drawing": "51, 0",
+        "HeatRes.drawing": "52, 0",
         "Via4": "66, 0",
         "Via4.drawing": "66, 0",
         "Via4.net": "66, 3",

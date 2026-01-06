@@ -18,6 +18,20 @@ def fix(value):
         return value
 
 
+def _snap_width_to_grid(width_um: float) -> float:
+    """Snap port width to the nearest multiple of 0.002 um (2 DBU = 0.002 um).
+
+    Args:
+        width_um: Port width in microns.
+
+    Returns:
+        Width snapped to the nearest valid grid multiple.
+    """
+    grid = 0.002
+    w = max(width_um, grid)
+    return round(w / grid) * grid
+
+
 @gf.cell
 def npn13G2(
     baspolyx: float = 0.3,
@@ -56,19 +70,6 @@ def npn13G2(
     """
 
     c = gf.Component()
-
-    def _snap_width_to_grid(width_um: float) -> float:
-        """Snap port width to the nearest multiple of 0.002 um (2 DBU = 0.002 um).
-
-        Args:
-            width_um: Port width in microns.
-
-        Returns:
-            Width snapped to the nearest valid grid multiple.
-        """
-        grid = 0.002
-        w = max(width_um, grid)
-        return round(w / grid) * grid
 
     layer_via1: LayerSpec = "Via1drawing"
     layer_metal1: LayerSpec = "Metal1drawing"
@@ -973,6 +974,15 @@ def npn13G2L(
         column_pitch=column_pitch,
     ).move((emWindOrigin_x - Col_Metal1_distance - Col_Metal1_width, 4.1 + le))
 
+    collector_pin_xmin = emWindOrigin_x - Col_Metal1_distance - Col_Metal1_width
+    collector_pin_xmax = (
+        collector_pin_xmin + 2 * Col_Metal1_distance + we + 2 * Col_Metal1_width
+    )
+    # The maximum x depends on the number of elements
+    collector_pin_xmax += (Nx - 1) * (collector_pin_xmax - collector_pin_xmin)
+    collector_pin_ymin = 4.1 + le
+    collector_pin_ymax = collector_pin_ymin + 0.65
+
     c.add_ref(
         gf.components.rectangle(
             size=(
@@ -1021,6 +1031,13 @@ def npn13G2L(
         column_pitch=column_pitch,
     ).move((emWindOrigin_x - Bas_Metal1_distance - Bas_Metal1_width, 1.45))
 
+    base_pin_xmin = emWindOrigin_x - Bas_Metal1_distance - Bas_Metal1_width
+    base_pin_xmax = base_pin_xmin + 2 * Bas_Metal1_distance + we + 2 * Bas_Metal1_width
+    # The maximum x depends on the number of elements
+    base_pin_xmax += (Nx - 1) * column_pitch
+    base_pin_ymin = 1.45
+    base_pin_ymax = base_pin_ymin + 0.65
+
     c.add_ref(
         gf.components.rectangle(
             size=(
@@ -1057,6 +1074,15 @@ def npn13G2L(
         columns=Nx,
         column_pitch=column_pitch,
     ).move((emWindOrigin_x - Col_Metal1_distance - Col_Metal1_width, 2.9))
+
+    emitter_pin_xmin = emWindOrigin_x - Col_Metal1_distance - Col_Metal1_width
+    emitter_pin_xmax = (
+        emitter_pin_xmin + 2 * Col_Metal1_distance + we + 2 * Col_Metal1_width
+    )
+    # The maximum x depends on the number of elements
+    emitter_pin_xmax += (Nx - 1) * (emitter_pin_xmax - emitter_pin_xmin)
+    emitter_pin_ymin = 2.9
+    emitter_pin_ymax = emitter_pin_ymin + le + 0.4
 
     c.add_ref(
         gf.components.rectangle(
@@ -1174,6 +1200,71 @@ def npn13G2L(
             column_pitch=column_pitch,
         ).move((4.415, 1.45))
 
+    # Ports
+    # Collector port
+    c.add_port(
+        "C",
+        center=(
+            0.5 * (collector_pin_xmin + collector_pin_xmax),
+            0.5 * (collector_pin_ymin + collector_pin_ymax),
+        ),
+        width=_snap_width_to_grid(collector_pin_ymax - collector_pin_ymin),
+        layer=layer_metal1_pin,
+        orientation=180.0,
+        port_type="electrical",
+    )
+
+    c.add_label(
+        text="B",
+        layer=layer_text,
+        position=(
+            0.5 * (collector_pin_xmin + collector_pin_xmax),
+            0.5 * (collector_pin_ymin + collector_pin_ymax),
+        ),
+    )
+
+    # Base port
+    c.add_port(
+        "B",
+        center=(
+            0.5 * (base_pin_xmin + base_pin_xmax),
+            0.5 * (base_pin_ymin + base_pin_ymax),
+        ),
+        width=_snap_width_to_grid(base_pin_ymax - base_pin_ymin),
+        layer=layer_metal1_pin,
+        orientation=180.0,
+        port_type="electrical",
+    )
+    c.add_label(
+        text="B",
+        layer=layer_text,
+        position=(
+            0.5 * (base_pin_xmin + base_pin_xmax),
+            0.5 * (base_pin_ymin + base_pin_ymax),
+        ),
+    )
+
+    # Emitter port
+    c.add_port(
+        "E",
+        center=(
+            0.5 * (emitter_pin_xmin + emitter_pin_xmax),
+            0.5 * (emitter_pin_ymin + emitter_pin_ymax),
+        ),
+        width=_snap_width_to_grid(emitter_pin_ymax - emitter_pin_ymin),
+        layer=layer_metal2_pin,
+        orientation=180.0,
+        port_type="electrical",
+    )
+    c.add_label(
+        text="E",
+        layer=layer_text,
+        position=(
+            0.5 * (emitter_pin_xmin + emitter_pin_xmax),
+            0.5 * (emitter_pin_ymin + emitter_pin_ymax),
+        ),
+    )
+
     return c
 
 
@@ -1188,7 +1279,7 @@ if __name__ == "__main__":
     # c = xor(c0, c1)
     # c.show()
 
-    c0 = cells2.npn13G2L(Nx=3)
-    c1 = npn13G2L(Nx=3)
+    c0 = cells2.npn13G2L(Nx=2)
+    c1 = npn13G2L(Nx=2)
     c = xor(c0, c1)
     c.show()
