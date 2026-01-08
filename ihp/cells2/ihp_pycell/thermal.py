@@ -58,4 +58,6 @@ def ihpAddThermalMosLayer(self, bbox, addThermalText, label):
 
 
 def ihpAddThermalBjtLayer(self, bbox, addThermalText, label):
-    return ihpAddThermalLayer(self, Layer("HeatTrans"), bbox, addThermalText, label)
+    return ihpAddThermalLayer(
+        self, Layer("HeatTrans", "drawing"), bbox, addThermalText, label
+    )
