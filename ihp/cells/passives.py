@@ -177,15 +177,11 @@ def svaricap(
     # Add VLSIR metadata
     c.info["vlsir"] = {
         "model": model,
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "sg13g2_svaricaphv_mod.lib",
-        "port_order" : ["G1","W","G2","bn"],
+        "spice_type": "SUBCKT",
+        "spice_lib": "sg13g2_svaricaphv_mod.lib",
+        "port_order": ["G1", "W", "G2", "bn"],
         "port_map": {},
-        "params" : {
-            "w" : width * 1e-6,
-            "l" : length * 1e-6,
-            "Nx" : nf
-        }
+        "params": {"w": width * 1e-6, "l": length * 1e-6, "Nx": nf},
     }
 
     return c
@@ -361,15 +357,11 @@ def esd_nmos(
     # Add VLSIR metadata
     c.info["vlsir"] = {
         "model": model,
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "sg13g2_moslv_mod.lib",
-        "port_order" : ["VDD", "VSS"],
+        "spice_type": "SUBCKT",
+        "spice_lib": "sg13g2_moslv_mod.lib",
+        "port_order": ["VDD", "VSS"],
         "port_map": {},
-        "params" : {
-            "w" : width * 1e-6,
-            "l" : length * 1e-6,
-            "ng" : nf
-        }
+        "params": {"w": width * 1e-6, "l": length * 1e-6, "ng": nf},
     }
 
     return c
@@ -471,19 +463,19 @@ def ptap1(
     c.info["length"] = length
     c.info["rows"] = rows
     c.info["cols"] = cols
-    
+
     # Add VLSIR metadata
     c.info["vlsir"] = {
         "model": "ptap1",
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "resistors_mod.lib",
-        "port_order" : ["1", "2"],
+        "spice_type": "SUBCKT",
+        "spice_lib": "resistors_mod.lib",
+        "port_order": ["1", "2"],
         "port_map": {},
-        "params" : {
-            "w" : width * 1e-6,
-            "l" : length * 1e-6,
-        }
-        #TODO: Translate "rows, cols"
+        "params": {
+            "w": width * 1e-6,
+            "l": length * 1e-6,
+        },
+        # TODO: Translate "rows, cols"
     }
 
     return c
@@ -596,19 +588,19 @@ def ntap1(
     c.info["length"] = length
     c.info["rows"] = rows
     c.info["cols"] = cols
-    
+
     # Add VLSIR metadata
     c.info["vlsir"] = {
         "model": "ntap1",
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "resistors_mod.lib",
-        "port_order" : ["1", "2"],
+        "spice_type": "SUBCKT",
+        "spice_lib": "resistors_mod.lib",
+        "port_order": ["1", "2"],
         "port_map": {},
-        "params" : {
-            "w" : width * 1e-6,
-            "l" : length * 1e-6,
-        }
-        #TODO: Translate "rows, cols"
+        "params": {
+            "w": width * 1e-6,
+            "l": length * 1e-6,
+        },
+        # TODO: Translate "rows, cols"
     }
 
     return c

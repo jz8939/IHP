@@ -100,23 +100,19 @@ def bondpad(
     c.info["shape"] = shape
     c.info["diameter"] = diameter
     c.info["top_metal"] = layer_top_metal
-    
+
     # VLSIR Simulation Metadata
     c.info["vlsir"] = {
-        "model" : "bondpad",
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "sg13g2_bondpad.lib",
-        "port_order" : ["PAD"],
+        "model": "bondpad",
+        "spice_type": "SUBCKT",
+        "spice_lib": "sg13g2_bondpad.lib",
+        "port_order": ["PAD"],
         "port_map": {"pad": "PAD"},
-        "params" : {
-            "size" : diameter * 1e-6,
-            "shape" : {
-                "octagon" : 0,
-                "square" : 1,
-                "circle" : 2
-            }[shape],
-            "padtype" : 0 #TODO
-        }
+        "params": {
+            "size": diameter * 1e-6,
+            "shape": {"octagon": 0, "square": 1, "circle": 2}[shape],
+            "padtype": 0,  # TODO
+        },
     }
 
     return c
@@ -175,8 +171,8 @@ def bondpad_array(
     c.info["n_pads"] = n_pads
     c.info["pad_pitch"] = pad_pitch
     c.info["pad_diameter"] = pad_diameter
-    
-    #TODO: Bondpad array VLSIR Metadata
+
+    # TODO: Bondpad array VLSIR Metadata
 
     return c
 

@@ -265,19 +265,15 @@ def npn13G2(
     c.info["emitter_length"] = emitter_length
     c.info["m"] = m
     c.info["type"] = "npn"
-    
+
     # VLSIR Simulation Metadata
     c.info["vlsir"] = {
         "model": model,
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "sg13g2_hbt_mod.lib",
-        "port_order" : ["c", "b", "e"],
+        "spice_type": "SUBCKT",
+        "spice_lib": "sg13g2_hbt_mod.lib",
+        "port_order": ["c", "b", "e"],
         "port_map": {"C": "c", "B": "b", "E": "e"},
-        "params" : {
-            "we" : emitter_width * 1e-6,
-            "le" : emitter_length * 1e-6,
-            "m" : m
-        }
+        "params": {"we": emitter_width * 1e-6, "le": emitter_length * 1e-6, "m": m},
     }
 
     return c
@@ -287,7 +283,7 @@ def npn13G2(
 def npn13G2L(
     emitter_width: float = 0.07,
     emitter_length: float = 1.26,
-    model: str = "npn13G2l", # Lowercase l to match SPICE
+    model: str = "npn13G2l",  # Lowercase l to match SPICE
     m: int = 1,
     layer_nwell: LayerSpec = "NWelldrawing",
     layer_pwell: LayerSpec = "PWelldrawing",
@@ -337,7 +333,7 @@ def npn13G2L(
 def npn13G2V(
     emitter_width: float = 0.12,
     emitter_length: float = 0.9,
-    model: str = "npn13G2v", # lower-case v to match SPICE
+    model: str = "npn13G2v",  # lower-case v to match SPICE
     m: int = 1,
     layer_nwell: LayerSpec = "NWelldrawing",
     layer_pwell: LayerSpec = "PWelldrawing",
@@ -588,19 +584,15 @@ def pnpMPA(
     c.info["emitter_length"] = emitter_length
     c.info["m"] = m
     c.info["type"] = "pnp"
-    
+
     # VLSIR Simulation Metadata
     c.info["vlsir"] = {
         "model": model,
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "sg13g2_hbt_mod.lib",
-        "port_order" : ["c", "b", "e"],
+        "spice_type": "SUBCKT",
+        "spice_lib": "sg13g2_hbt_mod.lib",
+        "port_order": ["c", "b", "e"],
         "port_map": {"C": "c", "B": "b", "E": "e"},
-        "params" : {
-            "we" : emitter_width * 1e-6,
-            "le" : emitter_length * 1e-6,
-            "m" : m
-        }
+        "params": {"we": emitter_width * 1e-6, "le": emitter_length * 1e-6, "m": m},
     }
 
     return c

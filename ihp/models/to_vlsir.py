@@ -38,7 +38,7 @@ Usage:
 
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import vlsir
 import vlsir.circuit_pb2 as vckt
@@ -212,8 +212,7 @@ def to_proto(component: Component, domain: str = "") -> vckt.Package:
     # Connect the instance ports to the top-level signals
     for port_name in port_order:
         conn = vckt.Connection(
-            portname=port_name,
-            target=vckt.ConnectionTarget(sig=port_name)
+            portname=port_name, target=vckt.ConnectionTarget(sig=port_name)
         )
         inst.connections.append(conn)
 
@@ -261,12 +260,13 @@ def to_spice(component: Component, domain: str = "", fmt: str = "spice") -> str:
         ValueError: If component lacks valid vlsir metadata
     """
     try:
-        import vlsirtools.netlist
         from io import StringIO
+
+        import vlsirtools.netlist
     except ImportError:
         raise ImportError(
             "vlsirtools required for SPICE export. Install with: pip install vlsirtools"
-        )
+        ) from None
 
     pkg = to_proto(component, domain=domain)
     buffer = StringIO()
@@ -282,7 +282,9 @@ if __name__ == "__main__":
     @gf.cell
     def resistor(resistance: float = 1e3) -> gf.Component:
         c = gf.Component()
-        c.add_port(name="p", center=(0, 0), width=0.1, orientation=180, layer=SCHEM_LAYER)
+        c.add_port(
+            name="p", center=(0, 0), width=0.1, orientation=180, layer=SCHEM_LAYER
+        )
         c.add_port(name="n", center=(1, 0), width=0.1, orientation=0, layer=SCHEM_LAYER)
         c.info["vlsir"] = {
             "model": "rpoly",

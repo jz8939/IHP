@@ -38,8 +38,8 @@ dev = [
 docs = ["autodoc_pydantic", "jupytext", "jupyter-book==1.0.3"]
 
 [tool.codespell]
-ignore-words-list = "te,fpr,nd,donot,schem,contnet,Contnet,rady"
-skip = "*.lock,*.svg,*.gds,*.oas"
+ignore-words-list = "te,fpr,nd,donot,schem,contnet,Contnet,rady,inout,INOUT"
+skip = "*.lock,*.svg,*.gds,*.oas,*.lib"
 
 [tool.gdsfactoryplus]
 name = "ihp"

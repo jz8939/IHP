@@ -5,7 +5,9 @@ repos:
       - id: check-yaml
         exclude: ^(conda\.recipe/meta\.yaml|conda_build/templates/.*\.yaml|docs/click/meta\.yaml|conda/meta\.yaml|conda/construct.yaml|.*\.pic\.yml|conda/constructor/Miniforge3/construct.yaml)
       - id: end-of-file-fixer
+        exclude: ^(.*\.lib|.spiceinit)$
       - id: trailing-whitespace
+        exclude: ^(.*\.lib|.spiceinit)$
   - repo: https://github.com/kynan/nbstripout
     rev: 0.8.1
     hooks:
@@ -17,7 +19,8 @@ repos:
       - id: codespell
         additional_dependencies:
           - tomli
-        exclude: ^(pyproject\.toml|ihp/layers\.yaml|ihp/cells2/ihp_pycell/.*|cni/.*)$
+        args: [--ignore-words-list=te, fpr, nd, donot, schem, contnet, Contnet, rady, INOUT]
+        exclude: ^(pyproject\.toml|ihp/models/.*|ihp/layers\.yaml|ihp/cells2/ihp_pycell/.*|cni/.*)$
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.12.11"
     hooks:

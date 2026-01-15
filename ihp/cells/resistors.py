@@ -185,16 +185,12 @@ def rsil(
 
     # VLSIR simulation metadata
     c.info["vlsir"] = {
-        "model" : model,
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "resistors_mod.lib",
-        "port_order" : ["1", "2", "bn"],
+        "model": model,
+        "spice_type": "SUBCKT",
+        "spice_lib": "resistors_mod.lib",
+        "port_order": ["1", "2", "bn"],
         "port_map": {"P1": "1", "P2": "2"},
-        "params" : {
-            "w" : dx * 1e-6,
-            "l" : dy * 1e-6,
-            "m" : 1
-        }
+        "params": {"w": dx * 1e-6, "l": dy * 1e-6, "m": 1},
     }
 
     return c
@@ -380,16 +376,12 @@ def rppd(
 
     # VLSIR simulation metadata
     c.info["vlsir"] = {
-        "model" : model,
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "resistors_mod.lib",
-        "port_order" : ["1", "3", "bn"],
+        "model": model,
+        "spice_type": "SUBCKT",
+        "spice_lib": "resistors_mod.lib",
+        "port_order": ["1", "3", "bn"],
         "port_map": {"P1": "1", "P2": "3"},
-        "params" : {
-            "w" : dx * 1e-6,
-            "l" : dy * 1e-6,
-            "m" : 1
-        }
+        "params": {"w": dx * 1e-6, "l": dy * 1e-6, "m": 1},
     }
 
     return c
@@ -576,16 +568,12 @@ def rhigh(
 
     # VLSIR simulation metadata
     c.info["vlsir"] = {
-        "model" : model,
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "resistors_mod.lib",
-        "port_order" : ["1", "3", "bn"],
+        "model": model,
+        "spice_type": "SUBCKT",
+        "spice_lib": "resistors_mod.lib",
+        "port_order": ["1", "3", "bn"],
         "port_map": {"P1": "1", "P2": "3"},
-        "params" : {
-            "w" : dx * 1e-6,
-            "l" : dy * 1e-6,
-            "m" : 1
-        }
+        "params": {"w": dx * 1e-6, "l": dy * 1e-6, "m": 1},
     }
 
     return c

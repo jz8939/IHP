@@ -5,6 +5,7 @@ import gdsfactory as gf
 # Common port layer for schematic-only elements
 SCHEM_LAYER = (250, 0)
 
+
 @gf.cell
 def resistor(resistance: float = 1e3, model: str = "rpoly") -> gf.Component:
     c = gf.Component()
@@ -16,8 +17,8 @@ def resistor(resistance: float = 1e3, model: str = "rpoly") -> gf.Component:
         "spice_type": "RESISTOR",
         "spice_lib": None,
         "port_order": ["p", "n"],
-        "port_map" : {},
-        "params": {"r": resistance}
+        "port_map": {},
+        "params": {"r": resistance},
     }
     return c
 
@@ -33,8 +34,8 @@ def capacitor(capacitance: float = 1e-12, model: str = "cpoly") -> gf.Component:
         "spice_type": "CAPACITOR",
         "spice_lib": None,
         "port_order": ["p", "n"],
-        "port_map" : {},
-        "params": {"c": capacitance}
+        "port_map": {},
+        "params": {"c": capacitance},
     }
     return c
 
@@ -50,8 +51,8 @@ def inductor(inductance: float = 1e-9, model: str = "lind") -> gf.Component:
         "spice_type": "INDUCTOR",
         "spice_lib": None,
         "port_order": ["p", "n"],
-        "port_map" : {},
-        "params": {"l": inductance}
+        "port_map": {},
+        "params": {"l": inductance},
     }
     return c
 
@@ -59,7 +60,7 @@ def inductor(inductance: float = 1e-9, model: str = "lind") -> gf.Component:
 @gf.cell
 def mos(
     w: float = 1e-6,
-    l: float = 100e-9,
+    length: float = 100e-9,
     nf: int = 1,
     model: str = "nmos",
     spice_lib: str | None = None,
@@ -75,8 +76,8 @@ def mos(
         "spice_type": "MOS",
         "spice_lib": spice_lib,
         "port_order": ["D", "G", "S", "B"],
-        "port_map" : {},
-        "params": {"w": w, "l": l, "nf": nf}
+        "port_map": {},
+        "params": {"w": w, "l": length, "nf": nf},
     }
     return c
 
@@ -92,8 +93,8 @@ def diode(model: str = "diol", area: float = 1e-12, pj: float = 1e-6) -> gf.Comp
         "spice_type": "DIODE",
         "spice_lib": None,
         "port_order": ["p", "n"],
-        "port_map" : {},
-        "params": {"area": area, "pj": pj}
+        "port_map": {},
+        "params": {"area": area, "pj": pj},
     }
     return c
 
@@ -108,15 +109,17 @@ def bipolar(
     c.add_port(name="C", center=(0, 1), width=0.1, orientation=90, layer=SCHEM_LAYER)
     c.add_port(name="B", center=(-1, 0), width=0.1, orientation=180, layer=SCHEM_LAYER)
     c.add_port(name="E", center=(0, -1), width=0.1, orientation=270, layer=SCHEM_LAYER)
-    c.add_port(name="S", center=(1, 0), width=0.1, orientation=0, layer=SCHEM_LAYER)  # substrate
+    c.add_port(
+        name="S", center=(1, 0), width=0.1, orientation=0, layer=SCHEM_LAYER
+    )  # substrate
     c.info["model"] = "bipolar"
     c.info["vlsir"] = {
         "model": model,
         "spice_type": "BIPOLAR",
         "spice_lib": spice_lib,
         "port_order": ["C", "B", "E", "S"],
-        "port_map" : {},
-        "params": {"area": area}
+        "port_map": {},
+        "params": {"area": area},
     }
     return c
 
@@ -133,8 +136,8 @@ def vsource(dc: float = 0.0, ac: float = 0.0) -> gf.Component:
         "spice_type": "VSOURCE",
         "spice_lib": None,
         "port_order": ["p", "n"],
-        "port_map" : {},
-        "params": {"dc": dc, "ac": ac}
+        "port_map": {},
+        "params": {"dc": dc, "ac": ac},
     }
     return c
 
@@ -151,8 +154,8 @@ def isource(dc: float = 0.0, ac: float = 0.0) -> gf.Component:
         "spice_type": "ISOURCE",
         "spice_lib": None,
         "port_order": ["p", "n"],
-        "port_map" : {},
-        "params": {"dc": dc, "ac": ac}
+        "port_map": {},
+        "params": {"dc": dc, "ac": ac},
     }
     return c
 
@@ -161,18 +164,26 @@ def isource(dc: float = 0.0, ac: float = 0.0) -> gf.Component:
 def vcvs(gain: float = 1.0) -> gf.Component:
     """Voltage-controlled voltage source."""
     c = gf.Component()
-    c.add_port(name="p_out", center=(0, 1), width=0.1, orientation=90, layer=SCHEM_LAYER)
-    c.add_port(name="n_out", center=(0, -1), width=0.1, orientation=270, layer=SCHEM_LAYER)
-    c.add_port(name="p_ctrl", center=(-1, 0), width=0.1, orientation=180, layer=SCHEM_LAYER)
-    c.add_port(name="n_ctrl", center=(1, 0), width=0.1, orientation=0, layer=SCHEM_LAYER)
+    c.add_port(
+        name="p_out", center=(0, 1), width=0.1, orientation=90, layer=SCHEM_LAYER
+    )
+    c.add_port(
+        name="n_out", center=(0, -1), width=0.1, orientation=270, layer=SCHEM_LAYER
+    )
+    c.add_port(
+        name="p_ctrl", center=(-1, 0), width=0.1, orientation=180, layer=SCHEM_LAYER
+    )
+    c.add_port(
+        name="n_ctrl", center=(1, 0), width=0.1, orientation=0, layer=SCHEM_LAYER
+    )
     c.info["model"] = "vcvs"
     c.info["vlsir"] = {
         "model": "vcvs",
         "spice_type": "VCVS",
         "spice_lib": None,
         "port_order": ["p_out", "n_out", "p_ctrl", "n_ctrl"],
-        "port_map" : {},
-        "params": {"gain": gain}
+        "port_map": {},
+        "params": {"gain": gain},
     }
     return c
 
@@ -181,18 +192,26 @@ def vcvs(gain: float = 1.0) -> gf.Component:
 def vccs(gm: float = 1e-3) -> gf.Component:
     """Voltage-controlled current source."""
     c = gf.Component()
-    c.add_port(name="p_out", center=(0, 1), width=0.1, orientation=90, layer=SCHEM_LAYER)
-    c.add_port(name="n_out", center=(0, -1), width=0.1, orientation=270, layer=SCHEM_LAYER)
-    c.add_port(name="p_ctrl", center=(-1, 0), width=0.1, orientation=180, layer=SCHEM_LAYER)
-    c.add_port(name="n_ctrl", center=(1, 0), width=0.1, orientation=0, layer=SCHEM_LAYER)
+    c.add_port(
+        name="p_out", center=(0, 1), width=0.1, orientation=90, layer=SCHEM_LAYER
+    )
+    c.add_port(
+        name="n_out", center=(0, -1), width=0.1, orientation=270, layer=SCHEM_LAYER
+    )
+    c.add_port(
+        name="p_ctrl", center=(-1, 0), width=0.1, orientation=180, layer=SCHEM_LAYER
+    )
+    c.add_port(
+        name="n_ctrl", center=(1, 0), width=0.1, orientation=0, layer=SCHEM_LAYER
+    )
     c.info["model"] = "vccs"
     c.info["vlsir"] = {
         "model": "vccs",
         "spice_type": "VCCS",
         "spice_lib": None,
         "port_order": ["p_out", "n_out", "p_ctrl", "n_ctrl"],
-        "port_map" : {},
-        "params": {"gm": gm}
+        "port_map": {},
+        "params": {"gm": gm},
     }
     return c
 
@@ -201,18 +220,26 @@ def vccs(gm: float = 1e-3) -> gf.Component:
 def cccs(gain: float = 1.0) -> gf.Component:
     """Current-controlled current source."""
     c = gf.Component()
-    c.add_port(name="p_out", center=(0, 1), width=0.1, orientation=90, layer=SCHEM_LAYER)
-    c.add_port(name="n_out", center=(0, -1), width=0.1, orientation=270, layer=SCHEM_LAYER)
-    c.add_port(name="p_ctrl", center=(-1, 0), width=0.1, orientation=180, layer=SCHEM_LAYER)
-    c.add_port(name="n_ctrl", center=(1, 0), width=0.1, orientation=0, layer=SCHEM_LAYER)
+    c.add_port(
+        name="p_out", center=(0, 1), width=0.1, orientation=90, layer=SCHEM_LAYER
+    )
+    c.add_port(
+        name="n_out", center=(0, -1), width=0.1, orientation=270, layer=SCHEM_LAYER
+    )
+    c.add_port(
+        name="p_ctrl", center=(-1, 0), width=0.1, orientation=180, layer=SCHEM_LAYER
+    )
+    c.add_port(
+        name="n_ctrl", center=(1, 0), width=0.1, orientation=0, layer=SCHEM_LAYER
+    )
     c.info["model"] = "cccs"
     c.info["vlsir"] = {
         "model": "cccs",
         "spice_type": "CCCS",
         "spice_lib": None,
         "port_order": ["p_out", "n_out", "p_ctrl", "n_ctrl"],
-        "port_map" : {},
-        "params": {"gain": gain}
+        "port_map": {},
+        "params": {"gain": gain},
     }
     return c
 
@@ -221,17 +248,25 @@ def cccs(gain: float = 1.0) -> gf.Component:
 def ccvs(rm: float = 1e3) -> gf.Component:
     """Current-controlled voltage source."""
     c = gf.Component()
-    c.add_port(name="p_out", center=(0, 1), width=0.1, orientation=90, layer=SCHEM_LAYER)
-    c.add_port(name="n_out", center=(0, -1), width=0.1, orientation=270, layer=SCHEM_LAYER)
-    c.add_port(name="p_ctrl", center=(-1, 0), width=0.1, orientation=180, layer=SCHEM_LAYER)
-    c.add_port(name="n_ctrl", center=(1, 0), width=0.1, orientation=0, layer=SCHEM_LAYER)
+    c.add_port(
+        name="p_out", center=(0, 1), width=0.1, orientation=90, layer=SCHEM_LAYER
+    )
+    c.add_port(
+        name="n_out", center=(0, -1), width=0.1, orientation=270, layer=SCHEM_LAYER
+    )
+    c.add_port(
+        name="p_ctrl", center=(-1, 0), width=0.1, orientation=180, layer=SCHEM_LAYER
+    )
+    c.add_port(
+        name="n_ctrl", center=(1, 0), width=0.1, orientation=0, layer=SCHEM_LAYER
+    )
     c.info["model"] = "ccvs"
     c.info["vlsir"] = {
         "model": "ccvs",
         "spice_type": "CCVS",
         "spice_lib": None,
         "port_order": ["p_out", "n_out", "p_ctrl", "n_ctrl"],
-        "params": {"rm": rm}
+        "params": {"rm": rm},
     }
     return c
 
@@ -250,7 +285,7 @@ def tline(z0: float = 50.0, td: float = 1e-9) -> gf.Component:
         "spice_type": "TLINE",
         "spice_lib": None,
         "port_order": ["p1", "n1", "p2", "n2"],
-        "params": {"z0": z0, "td": td}
+        "params": {"z0": z0, "td": td},
     }
     return c
 
@@ -264,7 +299,7 @@ def subckt(
 ) -> gf.Component:
     """Generic subcircuit wrapper."""
     c = gf.Component()
-    
+
     c.info["model"] = model
     for i, port_name in enumerate(ports):
         c.add_port(
@@ -279,7 +314,7 @@ def subckt(
         "spice_type": "SUBCKT",
         "spice_lib": spice_lib,
         "port_order": ports,
-        "params": params or {}
+        "params": params or {},
     }
-    
+
     return c

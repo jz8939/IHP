@@ -4,6 +4,7 @@ title: IHP
 author: IHP
 logo: logo.png
 # Force re-execution of notebooks on each build.
+
 # See https://jupyterbook.org/content/execute.html
 execute:
   execute_notebooks: cache
@@ -13,6 +14,7 @@ latex:
   latex_engine: pdflatex # one of 'pdflatex', 'xelatex' (recommended for unicode), 'luatex', 'platex', 'uplatex'
   use_jupyterbook_latex: true # use sphinx-jupyterbook-latex for pdf builds as default
 # Add a bibtex file so that we can create citations
+
 html:
   home_page_in_navbar: true
   use_edit_page_button: true
@@ -20,11 +22,13 @@ html:
   use_issues_button: true
   baseurl: https://github.com/gdsfactory/ihp
 # Information about where the book exists on the web
+
 repository:
   url: https://github.com/gdsfactory/ihp
   path_to_book: docs # Optional path to your book, relative to the repository root
   branch: main # Which branch of the repository should be used when creating links (optional)
 # launch_buttons:
+
 #   notebook_interface: jupyterlab
 #   colab_url: "https://colab.research.google.com"
 sphinx:

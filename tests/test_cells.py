@@ -29,11 +29,11 @@ skip_test = {
     "pack_doe",
     "pack_doe_grid",
     "import_gds",
-    "nmos_hv", # reference GDS not found
-    "pmos_hv", # reference GDS not found
-    "rfpmos", # reference GDS not found
-    "rfnmos", # reference GDS not found
-    "subckt", # requires mocking with model and ports
+    "nmos_hv",  # reference GDS not found
+    "pmos_hv",  # reference GDS not found
+    "rfpmos",  # reference GDS not found
+    "rfnmos",  # reference GDS not found
+    "subckt",  # requires mocking with model and ports
     "svaricap",
     "SVaricap",
     "guard_ring",  # Requires bbox or path argument
@@ -296,7 +296,9 @@ class TestVlsirValidationErrors:
             "port_map": {"D": "d", "X": "g"},  # 'X' doesn't exist on component
         }
 
-        with pytest.raises(ValueError, match="port_map contains component ports not found.*X"):
+        with pytest.raises(
+            ValueError, match="port_map contains component ports not found.*X"
+        ):
             validate_vlsir_metadata(c)
 
     def test_port_map_not_dict(self) -> None:

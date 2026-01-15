@@ -180,17 +180,17 @@ def nmos(
 
     # VLSIR simulation metadata
     c.info["vlsir"] = {
-        "model" : "sg13_lv_nmos",
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "sg13g2_moslv_mod.lib",
-        "port_order" : ["d", "g", "s", "b"],
+        "model": "sg13_lv_nmos",
+        "spice_type": "SUBCKT",
+        "spice_lib": "sg13g2_moslv_mod.lib",
+        "port_order": ["d", "g", "s", "b"],
         "port_map": {"D": "d", "G": "g", "S": "s"},
-        "params" : {
+        "params": {
             "w": width * 1e-6,
             "l": length * 1e-6,
             "ng": nf,
             "m": m,
-        }
+        },
     }
 
     return c
@@ -385,17 +385,17 @@ def pmos(
 
     # VLSIR simulation metadata
     c.info["vlsir"] = {
-        "model" : "sg13_lv_pmos",
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "sg13g2_moslv_mod.lib",
-        "port_order" : ["d", "g", "s", "b"],
+        "model": "sg13_lv_pmos",
+        "spice_type": "SUBCKT",
+        "spice_lib": "sg13g2_moslv_mod.lib",
+        "port_order": ["d", "g", "s", "b"],
         "port_map": {"D": "d", "G": "g", "S": "s"},
-        "params" : {
+        "params": {
             "w": width * 1e-6,
             "l": length * 1e-6,
             "ng": nf,
             "m": m,
-        }
+        },
     }
 
     return c
@@ -464,17 +464,17 @@ def nmos_hv(
 
     # VLSIR simulation metadata
     c.info["vlsir"] = {
-        "model" : "sg13_hv_nmos",
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "sg13g2_moshv_mod.lib",
-        "port_order" : ["d", "g", "s", "b"],
+        "model": "sg13_hv_nmos",
+        "spice_type": "SUBCKT",
+        "spice_lib": "sg13g2_moshv_mod.lib",
+        "port_order": ["d", "g", "s", "b"],
         "port_map": {"D": "d", "G": "g", "S": "s"},
-        "params" : {
+        "params": {
             "w": width * 1e-6,
             "l": length * 1e-6,
             "ng": nf,
             "m": m,
-        }
+        },
     }
 
     return c
@@ -546,17 +546,17 @@ def pmos_hv(
 
     # VLSIR simulation metadata
     c.info["vlsir"] = {
-        "model" : "sg13_hv_pmos",
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "sg13g2_moshv_mod.lib",
-        "port_order" : ["d", "g", "s", "b"],
+        "model": "sg13_hv_pmos",
+        "spice_type": "SUBCKT",
+        "spice_lib": "sg13g2_moshv_mod.lib",
+        "port_order": ["d", "g", "s", "b"],
         "port_map": {"D": "d", "G": "g", "S": "s"},
-        "params" : {
+        "params": {
             "w": width * 1e-6,
             "l": length * 1e-6,
             "ng": nf,
             "m": m,
-        }
+        },
     }
 
     return c
@@ -628,18 +628,18 @@ def rfnmos(
 
     # VLSIR simulation metadata
     c.info["vlsir"] = {
-        "model" : "sg13_lv_nmos",
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "sg13g2_moslv_mod.lib",
-        "port_order" : ["d", "g", "s", "b"],
+        "model": "sg13_lv_nmos",
+        "spice_type": "SUBCKT",
+        "spice_lib": "sg13g2_moslv_mod.lib",
+        "port_order": ["d", "g", "s", "b"],
         "port_map": {"D": "d", "G": "g", "S": "s"},
-        "params" : {
+        "params": {
             "w": width * 1e-6,
             "l": length * 1e-6,
             "ng": nf,
             "m": m,
             "rfmode": 1,  # Enable RF mode
-        }
+        },
     }
 
     return c
@@ -711,21 +711,21 @@ def rfpmos(
     c.add_ports(pmos_ref.ports)
 
     c.info["type"] = "rfpmos"
-    
+
     # VLSIR simulation metadata
     c.info["vlsir"] = {
-        "model" : "sg13_lv_pmos",
-        "spice_type" : "SUBCKT",
-        "spice_lib" : "sg13g2_moslv_mod.lib",
-        "port_order" : ["d", "g", "s", "b"],
+        "model": "sg13_lv_pmos",
+        "spice_type": "SUBCKT",
+        "spice_lib": "sg13g2_moslv_mod.lib",
+        "port_order": ["d", "g", "s", "b"],
         "port_map": {"D": "d", "G": "g", "S": "s"},
-        "params" : {
+        "params": {
             "w": width * 1e-6,
             "l": length * 1e-6,
             "ng": nf,
             "m": m,
             "rfmode": 1,  # Enable RF mode
-        }
+        },
     }
 
     return c
