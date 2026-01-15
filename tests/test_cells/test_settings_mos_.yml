@@ -16,7 +16,7 @@ info:
     spice_type: MOS
 name: mos_W1em06_L1em07_N1_Mnmos_SLNone
 settings:
-  l: 0.0
+  length: 0.0
   model: nmos
   nf: 1
   w: 0.0
