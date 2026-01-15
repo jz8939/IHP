@@ -238,6 +238,7 @@ def dantenna(
         "spice_type" : "SUBCKT",
         "spice_lib" : "diodes.lib",
         "port_order" : ["1", "2"],
+        "port_map": {},  # No physical ports defined on component
         "params" : {
             "w" : width * 1e-6,
             "l" : length * 1e-6
@@ -360,6 +361,7 @@ def dpantenna(
         "spice_type" : "SUBCKT",
         "spice_lib" : "diodes.lib",
         "port_order" : ["1", "2"],
+        "port_map": {},  # No physical ports defined on component
         "params" : {
             "w" : width * 1e-6,
             "l" : length * 1e-6

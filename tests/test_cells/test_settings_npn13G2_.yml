@@ -1,3 +1,13 @@
-info: {}
+info:
+  vlsir:
+    model: npn13G2
+    port_map: {}
+    port_order:
+    - c
+    - b
+    - e
+    - bn
+    spice_lib: sg13g2_hbt_mod.lib
+    spice_type: SUBCKT
 name: npn13G2
 settings: {}

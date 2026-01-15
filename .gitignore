@@ -16,7 +16,7 @@ tests/gds_ref/*.oas
 docs/components.rst
 docs/components_plot.rst
 .vscode/
-
+.claude/
 
 # C extensions
 *.so

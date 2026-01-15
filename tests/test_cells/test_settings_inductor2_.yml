@@ -6,7 +6,7 @@ info:
   space: 2.1
   turns: 1
   width: 2
-name: inductor2_W2_S2p1_D25p35_R0p5777_I3p3303em11_T1_LM1TopM_818d07c8
+name: inductor2_W2_S2p1_D25p35_VW0p9_R0p5777_I3p3303em11_T1L3_a461ebaa
 settings:
   diameter: 25.35
   inductance: 0.0
@@ -31,5 +31,7 @@ settings:
   - NoRCXdrawing
   resistance: 0.578
   space: 2.1
+  terminal_1_length: 30
   turns: 1
+  vias_width: 0.9
   width: 2

@@ -1,11 +1,26 @@
 info:
   dx: 0.5
   dy: 0.5
-  model: rsil
+  model: rppd
   n_squares: 1
   resistance: 300
   sheet_resistance: 300
-name: rppd_D0p5_D0p5_RNone_Mrsil_LPPolyResdrawing_LHHeatResdr_63b006ca
+  vlsir:
+    model: rppd
+    params:
+      l: 0.0
+      m: 1
+      w: 0.0
+    port_map:
+      P1: '1'
+      P2: '3'
+    port_order:
+    - '1'
+    - '3'
+    - bn
+    spice_lib: resistors_mod.lib
+    spice_type: SUBCKT
+name: rppd_D0p5_D0p5_RNone_Mrppd_LPPolyResdrawing_LHHeatResdr_f26b8519
 settings:
   dx: 0.5
   dy: 0.5
@@ -18,4 +33,4 @@ settings:
   layer_pSD: pSDdrawing
   layer_poly: PolyResdrawing
   layer_sal_block: SalBlockdrawing
-  model: rsil
+  model: rppd

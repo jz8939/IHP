@@ -4,6 +4,24 @@ info:
   model: sg13_lv_nmos
   nf: 1
   type: nmos
+  vlsir:
+    model: sg13_lv_nmos
+    params:
+      l: 0.0
+      m: 1
+      ng: 1
+      w: 0.0
+    port_map:
+      D: d
+      G: g
+      S: s
+    port_order:
+    - d
+    - g
+    - s
+    - b
+    spice_lib: sg13g2_moslv_mod.lib
+    spice_type: SUBCKT
   width: 1
 name: nmos_W1_L0p13_N1_M1_Msg13_lv_nmos_LGGatPolydrawing_LAAc_b1381431
 settings:

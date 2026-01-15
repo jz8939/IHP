@@ -1,10 +1,16 @@
 info:
-  length: 0.5
-  model: esd_nmos
-  nf: 10
-  type: esd_nmos
-  width: 50
-name: esd_nmos_W50_L0p5_N10_Mesd_nmos_LPPWelldrawing_LAActivd_e4e1883b
+  vlsir:
+    l: 0.0
+    model: nmoscl_2
+    ng: 10
+    port_map: {}
+    port_order:
+    - VDD
+    - VSS
+    spice_lib: sg13g2_moslv_mod.lib
+    spice_type: SUBCKT
+    w: 0.0
+name: esd_nmos_W50_L0p5_N10_Mnmoscl_2_LPPWelldrawing_LAActivd_fa755f41
 settings:
   layer_activ: Activdrawing
   layer_cont: Contdrawing
@@ -15,6 +21,6 @@ settings:
   layer_nsd: nSDdrawing
   layer_pwell: PWelldrawing
   length: 0.5
-  model: esd_nmos
+  model: nmoscl_2
   nf: 10
   width: 50

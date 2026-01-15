@@ -9,7 +9,11 @@ Required vlsir info structure:
         "spice_type": "MOS",       # Required: SpiceType (MOS, RESISTOR, etc.)
         "port_order": ["D", "G", "S", "B"],  # Required: Port names in SPICE order
         "params": {"w": 1e-6, "l": 100e-9},  # Optional: Device parameters
+        "port_map": {"D": "d", "G": "g"},    # Optional: Component port -> VLSIR port mapping
     }
+
+If port_map is provided, validation checks that component ports in the map exist.
+If port_map is not provided, port_order names must match component port names exactly.
 
 Usage:
     import gdsfactory as gf
@@ -110,15 +114,33 @@ def validate_vlsir_metadata(component: Component) -> dict[str, Any]:
             f"got: {port_order}"
         )
 
-    # Validate port_order names exist as actual ports on the component
-    component_ports = set(component.ports.keys())
-    port_order_set = set(port_order)
-    missing_ports = port_order_set - component_ports
-    if missing_ports:
-        raise ValueError(
-            f"Component '{component.name}' port_order contains ports not found on component: "
-            f"{sorted(missing_ports)}. Available ports: {sorted(component_ports)}"
-        )
+    # Validate ports - either via port_map or direct port_order matching
+    component_ports = {p.name for p in component.ports}
+    port_map = vlsir_info.get("port_map")
+
+    if port_map is not None:
+        # Validate port_map: component ports in the map must exist
+        if not isinstance(port_map, dict):
+            raise ValueError(
+                f"Component '{component.name}' port_map must be a dict, "
+                f"got: {type(port_map).__name__}"
+            )
+        missing_ports = set(port_map.keys()) - component_ports
+        if missing_ports:
+            raise ValueError(
+                f"Component '{component.name}' port_map contains component ports not found: "
+                f"{sorted(missing_ports)}. Available ports: {sorted(component_ports)}"
+            )
+    else:
+        # No port_map: port_order names must match component port names exactly
+        port_order_set = set(port_order)
+        missing_ports = port_order_set - component_ports
+        if missing_ports:
+            raise ValueError(
+                f"Component '{component.name}' port_order contains ports not found on component: "
+                f"{sorted(missing_ports)}. Available ports: {sorted(component_ports)}. "
+                f"Consider adding a 'port_map' to map component ports to VLSIR ports."
+            )
 
     return vlsir_info
 

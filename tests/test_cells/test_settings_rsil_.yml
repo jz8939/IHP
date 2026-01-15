@@ -5,6 +5,21 @@ info:
   n_squares: 1
   resistance: 7
   sheet_resistance: 7
+  vlsir:
+    model: rsil
+    params:
+      l: 0.0
+      m: 1
+      w: 0.0
+    port_map:
+      P1: '1'
+      P2: '2'
+    port_order:
+    - '1'
+    - '2'
+    - bn
+    spice_lib: resistors_mod.lib
+    spice_type: SUBCKT
 name: rsil_D0p5_D0p5_RNone_Mrsil_LPPolyResdrawing_LHHeatResdr_0d134d2b
 settings:
   dx: 0.5

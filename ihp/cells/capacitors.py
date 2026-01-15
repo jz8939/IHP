@@ -699,7 +699,8 @@ def rfcmim(
         "model" : "cap_rfcmim",
         "spice_type" : "SUBCKT",
         "spice_lib" : "capacitors_mod.lib",
-        "port_order" : ["PLUS", "MINUS"],
+        "port_order" : ["PLUS", "MINUS", "bn"],
+        "port_map": {"PLUS": "PLUS", "MINUS": "MINUS"},
         "params" : {
             "l" : length * 1e-6,
             "w" : width * 1e-6

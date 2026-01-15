@@ -184,6 +184,7 @@ def nmos(
         "spice_type" : "SUBCKT",
         "spice_lib" : "sg13g2_moslv_mod.lib",
         "port_order" : ["d", "g", "s", "b"],
+        "port_map": {"D": "d", "G": "g", "S": "s"},
         "params" : {
             "w": width * 1e-6,
             "l": length * 1e-6,
@@ -388,6 +389,7 @@ def pmos(
         "spice_type" : "SUBCKT",
         "spice_lib" : "sg13g2_moslv_mod.lib",
         "port_order" : ["d", "g", "s", "b"],
+        "port_map": {"D": "d", "G": "g", "S": "s"},
         "params" : {
             "w": width * 1e-6,
             "l": length * 1e-6,
@@ -466,6 +468,7 @@ def nmos_hv(
         "spice_type" : "SUBCKT",
         "spice_lib" : "sg13g2_moshv_mod.lib",
         "port_order" : ["d", "g", "s", "b"],
+        "port_map": {"D": "d", "G": "g", "S": "s"},
         "params" : {
             "w": width * 1e-6,
             "l": length * 1e-6,
@@ -547,6 +550,7 @@ def pmos_hv(
         "spice_type" : "SUBCKT",
         "spice_lib" : "sg13g2_moshv_mod.lib",
         "port_order" : ["d", "g", "s", "b"],
+        "port_map": {"D": "d", "G": "g", "S": "s"},
         "params" : {
             "w": width * 1e-6,
             "l": length * 1e-6,
@@ -623,12 +627,12 @@ def rfnmos(
     c.info["type"] = "rfnmos"
 
     # VLSIR simulation metadata
-    # VLSIR simulation metadata
     c.info["vlsir"] = {
         "model" : "sg13_lv_nmos",
         "spice_type" : "SUBCKT",
         "spice_lib" : "sg13g2_moslv_mod.lib",
         "port_order" : ["d", "g", "s", "b"],
+        "port_map": {"D": "d", "G": "g", "S": "s"},
         "params" : {
             "w": width * 1e-6,
             "l": length * 1e-6,
@@ -714,6 +718,7 @@ def rfpmos(
         "spice_type" : "SUBCKT",
         "spice_lib" : "sg13g2_moslv_mod.lib",
         "port_order" : ["d", "g", "s", "b"],
+        "port_map": {"D": "d", "G": "g", "S": "s"},
         "params" : {
             "w": width * 1e-6,
             "l": length * 1e-6,

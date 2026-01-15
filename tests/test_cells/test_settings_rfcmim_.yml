@@ -1,3 +1,12 @@
-info: {}
+info:
+  vlsir:
+    model: cap_rfcmim
+    port_map: {}
+    port_order:
+    - PLUS
+    - MINUS
+    - bn
+    spice_lib: capacitors_mod.lib
+    spice_type: SUBCKT
 name: rfcmim
 settings: {}

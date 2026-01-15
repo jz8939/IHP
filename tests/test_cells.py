@@ -35,6 +35,7 @@ skip_test = {
     "rfnmos",
     "svaricap",
     "SVaricap",
+    "guard_ring",  # Requires bbox or path argument
 }
 
 
@@ -263,6 +264,51 @@ class TestVlsirValidationErrors:
         }
 
         with pytest.raises(ValueError, match="port_order must be a non-empty list"):
+            validate_vlsir_metadata(c)
+
+    def test_port_map_valid(self) -> None:
+        """Test that valid port_map passes validation."""
+        c = gf.Component()
+        c.add_port(name="D", center=(0, 0), width=0.1, orientation=180, layer=(1, 0))
+        c.add_port(name="G", center=(1, 0), width=0.1, orientation=0, layer=(1, 0))
+        c.add_port(name="S", center=(2, 0), width=0.1, orientation=0, layer=(1, 0))
+        c.info["vlsir"] = {
+            "model": "nmos",
+            "spice_type": "MOS",
+            "port_order": ["d", "g", "s", "b"],  # VLSIR/SPICE port names
+            "port_map": {"D": "d", "G": "g", "S": "s"},  # Component -> VLSIR mapping
+        }
+
+        # Should not raise
+        result = validate_vlsir_metadata(c)
+        assert result["port_map"] == {"D": "d", "G": "g", "S": "s"}
+
+    def test_port_map_invalid_component_port(self) -> None:
+        """Test that port_map with non-existent component port raises ValueError."""
+        c = gf.Component()
+        c.add_port(name="D", center=(0, 0), width=0.1, orientation=180, layer=(1, 0))
+        c.info["vlsir"] = {
+            "model": "nmos",
+            "spice_type": "MOS",
+            "port_order": ["d", "g"],
+            "port_map": {"D": "d", "X": "g"},  # 'X' doesn't exist on component
+        }
+
+        with pytest.raises(ValueError, match="port_map contains component ports not found.*X"):
+            validate_vlsir_metadata(c)
+
+    def test_port_map_not_dict(self) -> None:
+        """Test that non-dict port_map raises ValueError."""
+        c = gf.Component()
+        c.add_port(name="p", center=(0, 0), width=0.1, orientation=180, layer=(1, 0))
+        c.info["vlsir"] = {
+            "model": "rpoly",
+            "spice_type": "RESISTOR",
+            "port_order": ["p"],
+            "port_map": ["p"],  # Should be a dict
+        }
+
+        with pytest.raises(ValueError, match="port_map must be a dict"):
             validate_vlsir_metadata(c)
 
 

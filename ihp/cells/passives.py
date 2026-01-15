@@ -180,6 +180,7 @@ def svaricap(
         "spice_type" : "SUBCKT",
         "spice_lib" : "sg13g2_svaricaphv_mod.lib",
         "port_order" : ["G1","W","G2","bn"],
+        "port_map": {},
         # Params
         "w" : width * 1e-6,
         "l" : length * 1e-6,
@@ -362,6 +363,7 @@ def esd_nmos(
         "spice_type" : "SUBCKT",
         "spice_lib" : "sg13g2_moslv_mod.lib",
         "port_order" : ["VDD", "VSS"],
+        "port_map": {},
         # Params
         "w" : width * 1e-6,
         "l" : length * 1e-6,
@@ -474,6 +476,7 @@ def ptap1(
         "spice_type" : "SUBCKT",
         "spice_lib" : "resistors_mod.lib",
         "port_order" : ["1", "2"],
+        "port_map": {},
         # Params
         "w" : width * 1e-6,
         "l" : length * 1e-6,
@@ -597,6 +600,7 @@ def ntap1(
         "spice_type" : "SUBCKT",
         "spice_lib" : "resistors_mod.lib",
         "port_order" : ["1", "2"],
+        "port_map": {},
         # Params
         "w" : width * 1e-6,
         "l" : length * 1e-6,

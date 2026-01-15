@@ -107,6 +107,7 @@ def bondpad(
         "spice_type" : "SUBCKT",
         "spice_lib" : "sg13g2_bondpad.lib",
         "port_order" : ["PAD"],
+        "port_map": {"pad": "PAD"},
         "params" : {
             "size" : diameter * 1e-6,
             "shape" : {
@@ -117,7 +118,7 @@ def bondpad(
             "padtype" : 0 #TODO
         }
     }
-    
+
     return c
 
 

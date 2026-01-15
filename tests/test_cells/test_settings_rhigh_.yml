@@ -1,11 +1,26 @@
 info:
   dx: 0.5
   dy: 0.96
-  model: rsil
+  model: rhigh
   n_squares: 1.92
   resistance: 576
   sheet_resistance: 300
-name: rhigh_D0p96_D0p5_RNone_Mrsil_LPPolyResdrawing_LHHeatRes_891e5ff0
+  vlsir:
+    model: rhigh
+    params:
+      l: 0.0
+      m: 1
+      w: 0.0
+    port_map:
+      P1: '1'
+      P2: '3'
+    port_order:
+    - '1'
+    - '3'
+    - bn
+    spice_lib: resistors_mod.lib
+    spice_type: SUBCKT
+name: rhigh_D0p96_D0p5_RNone_Mrhigh_LPPolyResdrawing_LHHeatRe_f86e6d72
 settings:
   dx: 0.5
   dy: 0.96
@@ -19,4 +34,4 @@ settings:
   layer_pSD: pSDdrawing
   layer_poly: PolyResdrawing
   layer_sal_block: SalBlockdrawing
-  model: rsil
+  model: rhigh

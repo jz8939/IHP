@@ -272,6 +272,7 @@ def npn13G2(
         "spice_type" : "SUBCKT",
         "spice_lib" : "sg13g2_hbt_mod.lib",
         "port_order" : ["c", "b", "e"],
+        "port_map": {"C": "c", "B": "b", "E": "e"},
         "params" : {
             "we" : emitter_width * 1e-6,
             "le" : emitter_length * 1e-6,
@@ -594,6 +595,7 @@ def pnpMPA(
         "spice_type" : "SUBCKT",
         "spice_lib" : "sg13g2_hbt_mod.lib",
         "port_order" : ["c", "b", "e"],
+        "port_map": {"C": "c", "B": "b", "E": "e"},
         "params" : {
             "we" : emitter_width * 1e-6,
             "le" : emitter_length * 1e-6,
