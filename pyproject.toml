@@ -14,15 +14,17 @@ classifiers = [
 dependencies = [
   "gdsfactory~=9.24.0",
   "gplugins[sax]~=2.0.0",
-  "doroutes>=0.2.0"
+  "doroutes>=0.2.0",
+  "vlsir>=7.0.0",
+  "vlsirtools>=7.0.0"
 ]
-description = "IHP pdk"
+description = "IHP-GDSF PDK"
 keywords = ["python"]
 license = {file = "LICENSE"}
 name = "ihp-gdsfactory"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
-version = "0.1.4"
+version = "0.2.4"
 
 [project.optional-dependencies]
 dev = [
