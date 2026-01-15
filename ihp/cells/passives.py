@@ -181,10 +181,11 @@ def svaricap(
         "spice_lib" : "sg13g2_svaricaphv_mod.lib",
         "port_order" : ["G1","W","G2","bn"],
         "port_map": {},
-        # Params
-        "w" : width * 1e-6,
-        "l" : length * 1e-6,
-        "Nx" : nf
+        "params" : {
+            "w" : width * 1e-6,
+            "l" : length * 1e-6,
+            "Nx" : nf
+        }
     }
 
     return c
@@ -364,10 +365,11 @@ def esd_nmos(
         "spice_lib" : "sg13g2_moslv_mod.lib",
         "port_order" : ["VDD", "VSS"],
         "port_map": {},
-        # Params
-        "w" : width * 1e-6,
-        "l" : length * 1e-6,
-        "ng" : nf
+        "params" : {
+            "w" : width * 1e-6,
+            "l" : length * 1e-6,
+            "ng" : nf
+        }
     }
 
     return c
@@ -477,9 +479,10 @@ def ptap1(
         "spice_lib" : "resistors_mod.lib",
         "port_order" : ["1", "2"],
         "port_map": {},
-        # Params
-        "w" : width * 1e-6,
-        "l" : length * 1e-6,
+        "params" : {
+            "w" : width * 1e-6,
+            "l" : length * 1e-6,
+        }
         #TODO: Translate "rows, cols"
     }
 
@@ -601,9 +604,10 @@ def ntap1(
         "spice_lib" : "resistors_mod.lib",
         "port_order" : ["1", "2"],
         "port_map": {},
-        # Params
-        "w" : width * 1e-6,
-        "l" : length * 1e-6,
+        "params" : {
+            "w" : width * 1e-6,
+            "l" : length * 1e-6,
+        }
         #TODO: Translate "rows, cols"
     }
 
