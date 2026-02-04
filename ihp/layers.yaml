@@ -310,7 +310,7 @@ LayerViews:
   Metal1slit:
     layer: [8, 24]
     frame_color: "#39bfff"
-    fill_color: "black"
+    fill_color: "gray"
     hatch_pattern: full
     width: 1
   Metal1text:
@@ -403,7 +403,7 @@ LayerViews:
   Metal2slit:
     layer: [10, 24]
     frame_color: "#ccccd9"
-    fill_color: "black"
+    fill_color: "gray"
     hatch_pattern: full
     width: 1
   Metal2text:
@@ -496,7 +496,7 @@ LayerViews:
   Metal3slit:
     layer: [30, 24]
     frame_color: "#d80000"
-    fill_color: "black"
+    fill_color: "gray"
     hatch_pattern: full
     width: 1
   Metal3text:
@@ -612,7 +612,7 @@ LayerViews:
   Metal4slit:
     layer: [50, 24]
     frame_color: "#93e837"
-    fill_color: "black"
+    fill_color: "gray"
     hatch_pattern: full
     width: 1
   Metal4text:
@@ -705,7 +705,7 @@ LayerViews:
   Metal5slit:
     layer: [67, 24]
     frame_color: "#dcd146"
-    fill_color: "black"
+    fill_color: "gray"
     hatch_pattern: full
     width: 1
   Metal5text:
@@ -797,7 +797,7 @@ LayerViews:
   TopMetal1slit:
     layer: [126, 24]
     frame_color: "#ffe6bf"
-    fill_color: "black"
+    fill_color: "gray"
     hatch_pattern: hollow
     width: 1
   TopMetal1text:
@@ -882,7 +882,7 @@ LayerViews:
   TopMetal2slit:
     layer: [134, 24]
     frame_color: "#ff8000"
-    fill_color: "black"
+    fill_color: "gray"
     hatch_pattern: hollow
     width: 1
   TopMetal2text:
