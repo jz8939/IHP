@@ -36,6 +36,7 @@ dev = [
   "pre-commit"
 ]
 docs = ["autodoc_pydantic", "jupytext", "jupyter-book==1.0.3"]
+simulation = ["gsim"]
 
 [tool.codespell]
 ignore-words-list = "te,fpr,nd,donot,schem,contnet,Contnet,rady,inout,INOUT"

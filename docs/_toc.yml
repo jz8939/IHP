@@ -7,6 +7,10 @@ parts:
     chapters:
       - file: tech
       - file: cells
+  - caption: Palace Demos
+    chapters:
+      - file: palace_demo_cpw
+      - file: palace_demo_microstrip
   - caption: Reference
     chapters:
       - file: changelog
