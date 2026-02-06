@@ -1,5 +1,5 @@
 install:
-	uv sync --extra docs --extra dev
+	uv sync --extra docs --extra dev --extra simulation
 
 rm-samples:
 	rm -rf ihp/samples
