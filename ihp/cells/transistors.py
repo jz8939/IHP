@@ -7,7 +7,7 @@ from gdsfactory.typings import LayerSpec
 
 @gf.cell
 def nmos(
-    width: float = 1.0,
+    width: float = 0.15,
     length: float = 0.13,
     nf: int = 1,
     m: int = 1,
@@ -44,10 +44,11 @@ def nmos(
     cont_spacing = 0.18
     cont_gate_spacing = 0.14
     cont_enc_active = 0.07
-    cont_enc_metal = 0.06
+    cont_enc_metal = 0.05
     poly_extension = 0.18
     active_extension = 0.23
-    psd_enclosure = 0.12
+    active_source_drain_size = 0.3
+    # psd_enclosure = 0.12
 
     # Calculate dimensions
     gate_width = max(width / nf, gate_min_width)
@@ -59,7 +60,7 @@ def nmos(
     gate_length = round(gate_length / grid) * grid
 
     # Create transistor fingers
-    finger_pitch = gate_width + 2 * cont_gate_spacing + cont_size
+    finger_pitch = gate_length + 2 * cont_gate_spacing + cont_size
 
     for i in range(nf):
         x_offset = i * finger_pitch
@@ -74,13 +75,23 @@ def nmos(
 
         # Active region
         active_width = gate_width
-        active_length = gate_length + 2 * active_extension
+        active_length = gate_length + 2 * (active_extension + cont_gate_spacing)
         active = gf.components.rectangle(
             size=(active_length, active_width),
             layer=layer_activ,
         )
         active_ref = c.add_ref(active)
-        active_ref.move((x_offset - active_extension, poly_extension))
+        active_ref.move((x_offset - active_extension - cont_gate_spacing, poly_extension))
+
+        # Active source/drain regions
+        active_sd = gf.components.rectangle(
+            size=(active_source_drain_size, active_source_drain_size),
+            layer=layer_activ,
+        )
+        active_sd_left_ref = c.add_ref(active_sd)
+        active_sd_left_ref.move((x_offset - active_source_drain_size - cont_enc_active, poly_extension - (active_source_drain_size - gate_width) / 2))
+        active_sd_right_ref = c.add_ref(active_sd)
+        active_sd_right_ref.move((x_offset + gate_length + cont_enc_active, poly_extension - (active_source_drain_size - gate_width) / 2))
 
         # Source/Drain contacts
         # Calculate number of contacts
@@ -88,31 +99,31 @@ def nmos(
 
         # Source contacts (left)
         for j in range(n_cont_y):
-            y_pos = poly_extension + j * cont_spacing
+            y_pos = poly_extension - (cont_size - gate_width) / 2 + j * cont_spacing
 
             cont = gf.components.rectangle(
                 size=(cont_size, cont_size),
                 layer=layer_cont,
             )
             cont_ref = c.add_ref(cont)
-            cont_ref.move((x_offset - active_extension + cont_enc_active, y_pos))
+            cont_ref.move((x_offset - cont_gate_spacing - cont_size, y_pos))
 
             # Metal1 for source
             m1 = gf.components.rectangle(
-                size=(cont_size + 2 * cont_enc_metal, cont_size + 2 * cont_enc_metal),
+                size=(cont_size, cont_size + 2 * cont_enc_metal),
                 layer=layer_metal1,
             )
             m1_ref = c.add_ref(m1)
             m1_ref.move(
                 (
-                    x_offset - active_extension + cont_enc_active - cont_enc_metal,
+                    x_offset - cont_gate_spacing - cont_size,
                     y_pos - cont_enc_metal,
                 )
             )
 
         # Drain contacts (right)
         for j in range(n_cont_y):
-            y_pos = poly_extension + j * cont_spacing
+            y_pos = poly_extension - (cont_size - gate_width) / 2 + j * cont_spacing
 
             cont = gf.components.rectangle(
                 size=(cont_size, cont_size),
@@ -123,29 +134,29 @@ def nmos(
 
             # Metal1 for drain
             m1 = gf.components.rectangle(
-                size=(cont_size + 2 * cont_enc_metal, cont_size + 2 * cont_enc_metal),
+                size=(cont_size, cont_size + 2 * cont_enc_metal),
                 layer=layer_metal1,
             )
             m1_ref = c.add_ref(m1)
             m1_ref.move(
                 (
-                    x_offset + gate_length + cont_gate_spacing - cont_enc_metal,
+                    x_offset + gate_length + cont_gate_spacing,
                     y_pos - cont_enc_metal,
                 )
             )
 
-    # N+ implant
-    nsd = gf.components.rectangle(
-        size=(nf * finger_pitch + active_extension, gate_width + 2 * psd_enclosure),
-        layer=layer_nsd,
-    )
-    nsd_ref = c.add_ref(nsd)
-    nsd_ref.move((-active_extension - psd_enclosure, poly_extension - psd_enclosure))
+    # # N+ implant
+    # nsd = gf.components.rectangle(
+    #     size=(nf * finger_pitch + active_extension, gate_width + 2 * psd_enclosure),
+    #     layer=layer_nsd,
+    # )
+    # nsd_ref = c.add_ref(nsd)
+    # nsd_ref.move((-active_extension - psd_enclosure, poly_extension - psd_enclosure))
 
     # Add ports
     c.add_port(
         name="G",
-        center=(nf * finger_pitch / 2, -poly_extension),
+        center=(nf * finger_pitch / 2, 0),
         width=gate_length,
         orientation=270,
         layer=layer_gatpoly,
@@ -154,7 +165,7 @@ def nmos(
 
     c.add_port(
         name="S",
-        center=(-active_extension, gate_width / 2 + poly_extension),
+        center=(-cont_size - cont_gate_spacing, gate_width / 2 + poly_extension),
         width=gate_width,
         orientation=180,
         layer=layer_metal1,
@@ -163,7 +174,7 @@ def nmos(
 
     c.add_port(
         name="D",
-        center=(gate_length + active_extension, gate_width / 2 + poly_extension),
+        center=(gate_length + cont_gate_spacing + cont_size, gate_width / 2 + poly_extension),
         width=gate_width,
         orientation=0,
         layer=layer_metal1,
@@ -741,7 +752,9 @@ if __name__ == "__main__":
 
     # Test the components
     c0 = fixed.nmos()  # original
-    c1 = nmos()  # New
+    c1 = nmos().copy()  # New
+    offset = (c0.bbox().center() - c1.bbox().center())
+    c1.move((offset.x, offset.y))
     # c = gf.grid([c0, c1], spacing=100)
     c = xor(c0, c1)
     c.show()
