@@ -17,6 +17,7 @@ def nmos(
     layer_nsd: LayerSpec = "nSDdrawing",
     layer_cont: LayerSpec = "Contdrawing",
     layer_metal1: LayerSpec = "Metal1drawing",
+    layer_heattrans: LayerSpec = "HeatTransdrawing",
 ) -> Component:
     """Create an NMOS transistor.
 
@@ -92,6 +93,14 @@ def nmos(
         active_sd_left_ref.move((x_offset - active_source_drain_size - cont_enc_active, poly_extension - (active_source_drain_size - gate_width) / 2))
         active_sd_right_ref = c.add_ref(active_sd)
         active_sd_right_ref.move((x_offset + gate_length + cont_enc_active, poly_extension - (active_source_drain_size - gate_width) / 2))
+
+        # Heattrans region
+        heattrans = gf.components.rectangle(
+            size=(gate_length, gate_width),
+            layer=layer_heattrans,
+        )
+        heattrans_ref = c.add_ref(heattrans)
+        heattrans_ref.move((x_offset, poly_extension))
 
         # Source/Drain contacts
         # Calculate number of contacts
@@ -209,7 +218,7 @@ def nmos(
 
 @gf.cell
 def pmos(
-    width: float = 1.0,
+    width: float = 0.15,
     length: float = 0.13,
     nf: int = 1,
     m: int = 1,
@@ -220,6 +229,8 @@ def pmos(
     layer_psd: LayerSpec = "pSDdrawing",
     layer_cont: LayerSpec = "Contdrawing",
     layer_metal1: LayerSpec = "Metal1drawing",
+    layer_heattrans: LayerSpec = "HeatTransdrawing",
+    layer_substrate: LayerSpec = "Substratedrawing",
 ) -> Component:
     """Create a PMOS transistor.
 
@@ -248,11 +259,14 @@ def pmos(
     cont_spacing = 0.18
     cont_gate_spacing = 0.14
     cont_enc_active = 0.07
-    cont_enc_metal = 0.06
+    cont_enc_metal = 0.05
     poly_extension = 0.18
     active_extension = 0.23
-    nwell_enclosure = 0.31
+    active_source_drain_size = 0.3
     psd_enclosure = 0.12
+    psd_active_enc_x = 0.18
+    nwell_psd_enc_x = 0.13
+    nwell_psd_enc_y = 0.085
 
     # Calculate dimensions
     gate_width = max(width / nf, gate_min_width)
@@ -263,20 +277,8 @@ def pmos(
     gate_width = round(gate_width / grid) * grid
     gate_length = round(gate_length / grid) * grid
 
-    # N-Well
-    nwell_width = gate_width + 2 * nwell_enclosure
-    nwell_length = gate_length + 2 * active_extension + 2 * nwell_enclosure
-    nwell = gf.components.rectangle(
-        size=(nwell_length * nf, nwell_width),
-        layer=layer_nwell,
-    )
-    nwell_ref = c.add_ref(nwell)
-    nwell_ref.move(
-        (-active_extension - nwell_enclosure, poly_extension - nwell_enclosure)
-    )
-
     # Create transistor fingers
-    finger_pitch = gate_width + 2 * cont_gate_spacing + cont_size
+    finger_pitch = gate_length + 2 * cont_gate_spacing + cont_size
 
     for i in range(nf):
         x_offset = i * finger_pitch
@@ -291,44 +293,71 @@ def pmos(
 
         # Active region
         active_width = gate_width
-        active_length = gate_length + 2 * active_extension
+        active_length = gate_length + 2 * (active_extension + cont_gate_spacing)
         active = gf.components.rectangle(
             size=(active_length, active_width),
             layer=layer_activ,
         )
         active_ref = c.add_ref(active)
-        active_ref.move((x_offset - active_extension, poly_extension))
+        active_ref.move((x_offset - active_extension - cont_gate_spacing, poly_extension))
+
+        # Active source/drain regions
+        active_sd = gf.components.rectangle(
+            size=(active_source_drain_size, active_source_drain_size),
+            layer=layer_activ,
+        )
+        active_sd_left_ref = c.add_ref(active_sd)
+        active_sd_left_ref.move((x_offset - active_source_drain_size - cont_enc_active, poly_extension - (active_source_drain_size - gate_width) / 2))
+        active_sd_right_ref = c.add_ref(active_sd)
+        active_sd_right_ref.move((x_offset + gate_length + cont_enc_active, poly_extension - (active_source_drain_size - gate_width) / 2))
+
+        # Substrate region
+        substrate = gf.components.rectangle(
+            size=(active_source_drain_size, active_source_drain_size),
+            layer=layer_substrate,
+        )
+        substrate_ref = c.add_ref(substrate)
+        substrate_ref.move((x_offset + gate_length + cont_enc_active, poly_extension - (active_source_drain_size - gate_width) / 2))
+
+        # Heattrans region
+        heattrans = gf.components.rectangle(
+            size=(gate_length, gate_width),
+            layer=layer_heattrans,
+        )
+        heattrans_ref = c.add_ref(heattrans)
+        heattrans_ref.move((x_offset, poly_extension))
 
         # Source/Drain contacts
+        # Calculate number of contacts
         n_cont_y = int((active_width - cont_size) / cont_spacing) + 1
 
         # Source contacts (left)
         for j in range(n_cont_y):
-            y_pos = poly_extension + j * cont_spacing
+            y_pos = poly_extension - (cont_size - gate_width) / 2 + j * cont_spacing
 
             cont = gf.components.rectangle(
                 size=(cont_size, cont_size),
                 layer=layer_cont,
             )
             cont_ref = c.add_ref(cont)
-            cont_ref.move((x_offset - active_extension + cont_enc_active, y_pos))
+            cont_ref.move((x_offset - cont_gate_spacing - cont_size, y_pos))
 
             # Metal1 for source
             m1 = gf.components.rectangle(
-                size=(cont_size + 2 * cont_enc_metal, cont_size + 2 * cont_enc_metal),
+                size=(cont_size, cont_size + 2 * cont_enc_metal),
                 layer=layer_metal1,
             )
             m1_ref = c.add_ref(m1)
             m1_ref.move(
                 (
-                    x_offset - active_extension + cont_enc_active - cont_enc_metal,
+                    x_offset - cont_gate_spacing - cont_size,
                     y_pos - cont_enc_metal,
                 )
             )
 
         # Drain contacts (right)
         for j in range(n_cont_y):
-            y_pos = poly_extension + j * cont_spacing
+            y_pos = poly_extension - (cont_size - gate_width) / 2 + j * cont_spacing
 
             cont = gf.components.rectangle(
                 size=(cont_size, cont_size),
@@ -339,24 +368,33 @@ def pmos(
 
             # Metal1 for drain
             m1 = gf.components.rectangle(
-                size=(cont_size + 2 * cont_enc_metal, cont_size + 2 * cont_enc_metal),
+                size=(cont_size, cont_size + 2 * cont_enc_metal),
                 layer=layer_metal1,
             )
             m1_ref = c.add_ref(m1)
             m1_ref.move(
                 (
-                    x_offset + gate_length + cont_gate_spacing - cont_enc_metal,
+                    x_offset + gate_length + cont_gate_spacing,
                     y_pos - cont_enc_metal,
                 )
             )
 
     # P+ implant
     psd = gf.components.rectangle(
-        size=(nf * finger_pitch + active_extension, gate_width + 2 * psd_enclosure),
+        size=(nf * (finger_pitch + active_source_drain_size) + 2 * psd_active_enc_x, gate_width + 2 * poly_extension + 2 * psd_enclosure),
         layer=layer_psd,
     )
     psd_ref = c.add_ref(psd)
-    psd_ref.move((-active_extension - psd_enclosure, poly_extension - psd_enclosure))
+    psd_ref.move((- (nf * (finger_pitch + active_source_drain_size) + 2 * psd_active_enc_x - gate_length) / 2, - psd_enclosure))
+
+    # Nwell
+    nwell = gf.components.rectangle(
+        size=(nf * (finger_pitch + active_source_drain_size) + 2 * psd_active_enc_x + 2 * nwell_psd_enc_x, gate_width + 2 * poly_extension + 2 * psd_enclosure + 2 * nwell_psd_enc_y),
+        layer=layer_nwell,
+    )
+    nwell_ref = c.add_ref(nwell)
+    nwell_ref.move((- (nf * (finger_pitch + active_source_drain_size) + 2 * psd_active_enc_x + 2 * nwell_psd_enc_x - gate_length) / 2, - psd_enclosure - nwell_psd_enc_y))
+
 
     # Add ports
     c.add_port(
@@ -751,19 +789,21 @@ if __name__ == "__main__":
     PDK.activate()
 
     # Test the components
-    c0 = fixed.nmos()  # original
-    c1 = nmos().copy()  # New
+    # c0 = fixed.nmos()  # original
+    # c1 = nmos().copy()  # New
+    # offset = (c0.bbox().center() - c1.bbox().center())
+    # c1.move((offset.x, offset.y))
+    # # c = gf.grid([c0, c1], spacing=100)
+    # c = xor(c0, c1)
+    # c.show()
+
+    c0 = fixed.pmos()  # original
+    c1 = pmos().copy()  # New
     offset = (c0.bbox().center() - c1.bbox().center())
     c1.move((offset.x, offset.y))
     # c = gf.grid([c0, c1], spacing=100)
     c = xor(c0, c1)
     c.show()
-
-    # c0 = cells.pmos()  # original
-    # c1 = pmos()  # New
-    # # c = gf.grid([c0, c1], spacing=100)
-    # c = xor(c0, c1)
-    # c.show()
 
     # c0 = cells.rfnmos()  # original
     # c1 = rfnmos()  # New
