@@ -58,7 +58,9 @@ def _grid_fix(x: float) -> float:
     return _fix(x * _IGRID + _EPSILON) * _GRID
 
 
-def _add_rect(c: Component, layer: LayerSpec, x1: float, y1: float, x2: float, y2: float):
+def _add_rect(
+    c: Component, layer: LayerSpec, x1: float, y1: float, x2: float, y2: float
+):
     """Add a rectangle directly as a polygon (no sub-cell hierarchy).
 
     Using add_polygon avoids sub-cell + transform indirection that can
@@ -123,16 +125,23 @@ def _place_contacts(
     else:
         x_start = ox
 
-    for i in range(int(nx)):
+    for _i in range(int(nx)):
         if ny == 1:
             y = (h - ws) / 2
         else:
             y = oy
 
-        for j in range(int(ny)):
+        for _j in range(int(ny)):
             cx = _grid_fix(xl + x_start)
             cy = _grid_fix(yl + y)
-            _add_rect(c, layer_cont, cx, cy, _grid_fix(xl + x_start + ws), _grid_fix(yl + y + ws))
+            _add_rect(
+                c,
+                layer_cont,
+                cx,
+                cy,
+                _grid_fix(xl + x_start + ws),
+                _grid_fix(yl + y + ws),
+            )
             y += ws + dsy
 
         x_start += ws + dsx
@@ -196,13 +205,7 @@ def _mos_core(
     ng = _fix(nf + epsilon)
     w = width / ng
     w = _grid_fix(w)
-    l = _grid_fix(length)
-
-    # Cell name for labels
-    if is_pmos:
-        cell_label = "pmosHV" if is_hv else "pmos"
-    else:
-        cell_label = "nmosHV" if is_hv else "nmos"
+    gate_length = _grid_fix(length)
 
     # Narrow-width gate-contact spacing adjustment
     if w < contActMin - epsilon:
@@ -211,11 +214,6 @@ def _mos_core(
     xdiff_beg = 0.0
     ydiff_beg = 0.0
     ydiff_end = w
-
-    # Contact count and offset calculations
-    xanz = _fix(
-        (w - 2 * cont_Activ_overRec + cont_dist) / (cont_size + cont_dist) + epsilon
-    )
 
     diffoffset = 0.0
     if w < contActMin:
@@ -257,18 +255,26 @@ def _mos_core(
 
     # Source Metal1
     _add_rect(
-        c, layer_metal1,
-        xcont_beg - cont_metall_over, yMet1,
-        xcont_end + cont_metall_over, yMet2,
+        c,
+        layer_metal1,
+        xcont_beg - cont_metall_over,
+        yMet1,
+        xcont_end + cont_metall_over,
+        yMet2,
     )
 
     # Source contacts
     _place_contacts(
-        c, layer_cont,
-        xcont_beg, ydiff_beg,
-        xcont_end, ydiff_end + diffoffset * 2,
-        0, cont_Activ_overRec,
-        cont_size, cont_dist,
+        c,
+        layer_cont,
+        xcont_beg,
+        ydiff_beg,
+        xcont_end,
+        ydiff_end + diffoffset * 2,
+        0,
+        cont_Activ_overRec,
+        cont_size,
+        cont_dist,
     )
 
     # Pin sublayer selection: the live PyCell's MkPin() uses Layer("Metal1", "drawing")
@@ -283,9 +289,12 @@ def _mos_core(
 
     # Source pin marker
     _add_rect(
-        c, pin_layer_m1,
-        xcont_beg - cont_metall_over, yMet1,
-        xcont_end + cont_metall_over, yMet2,
+        c,
+        pin_layer_m1,
+        xcont_beg - cont_metall_over,
+        yMet1,
+        xcont_end + cont_metall_over,
+        yMet2,
     )
 
     # Save source port location
@@ -295,7 +304,8 @@ def _mos_core(
 
     # Source diffusion (Activ)
     _add_rect(
-        c, layer_activ,
+        c,
+        layer_activ,
         xcont_beg - cont_Activ_overRec,
         ycont_beg - cont_Activ_overRec,
         xcont_end + cont_Activ_overRec,
@@ -310,28 +320,37 @@ def _mos_core(
         # Poly gate
         xpoly_beg = xcont_end + gatpoly_cont_dist
         ypoly_beg = ydiff_beg - gatpoly_Activ_over
-        xpoly_end = xpoly_beg + l
+        xpoly_end = xpoly_beg + gate_length
         ypoly_end = ydiff_end + gatpoly_Activ_over
 
         _add_rect(
-            c, layer_gatpoly,
-            xpoly_beg, ypoly_beg + diffoffset,
-            xpoly_end, ypoly_end + diffoffset,
+            c,
+            layer_gatpoly,
+            xpoly_beg,
+            ypoly_beg + diffoffset,
+            xpoly_end,
+            ypoly_end + diffoffset,
         )
 
         # HeatTrans layer (thermal marker)
         _add_rect(
-            c, layer_heattrans,
-            xpoly_beg, ypoly_beg + diffoffset,
-            xpoly_end, ypoly_end + diffoffset,
+            c,
+            layer_heattrans,
+            xpoly_beg,
+            ypoly_beg + diffoffset,
+            xpoly_end,
+            ypoly_end + diffoffset,
         )
 
         # Gate pin (first finger only, matching onep(i) check)
         if i == 1:
             _add_rect(
-                c, pin_layer_poly,
-                xpoly_beg, ypoly_beg + diffoffset,
-                xpoly_end, ypoly_end + diffoffset,
+                c,
+                pin_layer_poly,
+                xpoly_beg,
+                ypoly_beg + diffoffset,
+                xpoly_end,
+                ypoly_end + diffoffset,
             )
             gate_x = (xpoly_beg + xpoly_end) / 2
             gate_y = (ypoly_beg + ypoly_end) / 2 + diffoffset
@@ -345,33 +364,45 @@ def _mos_core(
 
         # Metal1 for this S/D column
         _add_rect(
-            c, layer_metal1,
-            xcont_beg - cont_metall_over, yMet1,
-            xcont_end + cont_metall_over, yMet2,
+            c,
+            layer_metal1,
+            xcont_beg - cont_metall_over,
+            yMet1,
+            xcont_end + cont_metall_over,
+            yMet2,
         )
 
         # Contacts for this S/D column
         _place_contacts(
-            c, layer_cont,
-            xcont_beg, ydiff_beg,
-            xcont_end, ydiff_end + diffoffset * 2,
-            0, cont_Activ_overRec,
-            cont_size, cont_dist,
+            c,
+            layer_cont,
+            xcont_beg,
+            ydiff_beg,
+            xcont_end,
+            ydiff_end + diffoffset * 2,
+            0,
+            cont_Activ_overRec,
+            cont_size,
+            cont_dist,
         )
 
         # Drain pin (first finger only)
         if i == 1:
             _add_rect(
-                c, pin_layer_m1,
-                xcont_beg - cont_metall_over, yMet1,
-                xcont_end + cont_metall_over, yMet2,
+                c,
+                pin_layer_m1,
+                xcont_beg - cont_metall_over,
+                yMet1,
+                xcont_end + cont_metall_over,
+                yMet2,
             )
             drain_x = (xcont_beg - cont_metall_over + xcont_end + cont_metall_over) / 2
             drain_y = src_y
 
         # Drain/source diffusion (Activ)
         _add_rect(
-            c, layer_activ,
+            c,
+            layer_activ,
             xcont_beg - cont_Activ_overRec,
             ycont_beg - cont_Activ_overRec,
             xcont_end + cont_Activ_overRec,
@@ -383,9 +414,12 @@ def _mos_core(
     # -----------------------------------------------------------------------
     xdiff_end = xcont_end + cont_Activ_overRec
     _add_rect(
-        c, layer_activ,
-        xdiff_beg, ydiff_beg + diffoffset,
-        xdiff_end, ydiff_end + diffoffset,
+        c,
+        layer_activ,
+        xdiff_beg,
+        ydiff_beg + diffoffset,
+        xdiff_end,
+        ydiff_end + diffoffset,
     )
 
     # -----------------------------------------------------------------------
@@ -394,7 +428,8 @@ def _mos_core(
     if is_pmos:
         # pSD layer
         _add_rect(
-            c, layer_psd,
+            c,
+            layer_psd,
             xdiff_beg - psd_pActiv_over,
             ypoly_beg - psd_PFET_over + gatpoly_Activ_over + diffoffset,
             xdiff_end + psd_pActiv_over,
@@ -406,7 +441,8 @@ def _mos_core(
         _grid_res = 0.0  # tech.getGridResolution()
         nwell_offset = max(0, _grid_fix((contActMin - w) / 2 + 0.5 * _grid_res))
         _add_rect(
-            c, layer_nwell,
+            c,
+            layer_nwell,
             xdiff_beg - nwell_pActiv_over,
             ydiff_beg - nwell_pActiv_over + diffoffset - nwell_offset,
             xdiff_end + nwell_pActiv_over,
@@ -418,7 +454,8 @@ def _mos_core(
     # -----------------------------------------------------------------------
     if is_pmos:
         _add_rect(
-            c, layer_substrate,
+            c,
+            layer_substrate,
             xcont_beg - cont_Activ_overRec,
             ycont_beg - cont_Activ_overRec,
             xcont_end + cont_Activ_overRec,
@@ -450,7 +487,8 @@ def _mos_core(
         else:
             # nmosHV: standard TGO enclosure
             _add_rect(
-                c, layer_thickgateox,
+                c,
+                layer_thickgateox,
                 xdiff_beg - thGateOxAct,
                 ydiff_beg - gatpoly_Activ_over - thGateOxGat,
                 xdiff_end + thGateOxAct,
@@ -467,12 +505,27 @@ def _mos_core(
 
     m1_layer = (8, 0)  # Metal1 drawing
     poly_layer = (5, 0)  # GatPoly drawing
-    c.add_port(name="S", center=(src_x, src_y), width=_even_dbu(port_height),
-               orientation=180, layer=m1_layer)
-    c.add_port(name="D", center=(drain_x, drain_y), width=_even_dbu(port_height),
-               orientation=0, layer=m1_layer)
-    c.add_port(name="G", center=(gate_x, gate_y), width=_even_dbu(gate_height),
-               orientation=270, layer=poly_layer)
+    c.add_port(
+        name="S",
+        center=(src_x, src_y),
+        width=_even_dbu(port_height),
+        orientation=180,
+        layer=m1_layer,
+    )
+    c.add_port(
+        name="D",
+        center=(drain_x, drain_y),
+        width=_even_dbu(port_height),
+        orientation=0,
+        layer=m1_layer,
+    )
+    c.add_port(
+        name="G",
+        center=(gate_x, gate_y),
+        width=_even_dbu(gate_height),
+        orientation=270,
+        layer=poly_layer,
+    )
 
     return c
 

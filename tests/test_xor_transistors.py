@@ -21,6 +21,7 @@ from ihp.cells.transistors import nmos, nmos_hv, pmos, pmos_hv
 # Fixtures
 # -----------------------------------------------------------------------
 
+
 @pytest.fixture(autouse=True)
 def activate_pdk():
     PDK.activate()
@@ -78,8 +79,8 @@ def xor_cells(ref, new):
         if xor_area > 1e-6:
             failures[key] = (
                 f"XOR={xor_area:.6f} um^2 "
-                f"(ref={r_ref.area()*dbu*dbu:.4f}, "
-                f"new={r_new.area()*dbu*dbu:.4f})"
+                f"(ref={r_ref.area() * dbu * dbu:.4f}, "
+                f"new={r_new.area() * dbu * dbu:.4f})"
             )
     return failures
 
@@ -88,79 +89,107 @@ def xor_cells(ref, new):
 # Test matrices
 # -----------------------------------------------------------------------
 
-NMOS_PARAMS = list(itertools.product(
-    [0.15, 0.22, 0.30, 0.60, 1.0],  # W
-    [0.13, 0.25, 0.50],              # L
-    [1, 2, 4],                       # NG
-))
+NMOS_PARAMS = list(
+    itertools.product(
+        [0.15, 0.22, 0.30, 0.60, 1.0],  # W
+        [0.13, 0.25, 0.50],  # L
+        [1, 2, 4],  # NG
+    )
+)
 
-PMOS_PARAMS = list(itertools.product(
-    [0.15, 0.22, 0.30, 0.60, 1.0],
-    [0.13, 0.25, 0.50],
-    [1, 2, 4],
-))
+PMOS_PARAMS = list(
+    itertools.product(
+        [0.15, 0.22, 0.30, 0.60, 1.0],
+        [0.13, 0.25, 0.50],
+        [1, 2, 4],
+    )
+)
 
-NMOSHV_PARAMS = list(itertools.product(
-    [0.30, 0.60, 1.0, 2.0],
-    [0.45, 0.70, 1.0],
-    [1, 2, 4],
-))
+NMOSHV_PARAMS = list(
+    itertools.product(
+        [0.30, 0.60, 1.0, 2.0],
+        [0.45, 0.70, 1.0],
+        [1, 2, 4],
+    )
+)
 
-PMOSHV_PARAMS = list(itertools.product(
-    [0.30, 0.60, 1.0, 2.0],
-    [0.40, 0.70, 1.0],
-    [1, 2, 4],
-))
+PMOSHV_PARAMS = list(
+    itertools.product(
+        [0.30, 0.60, 1.0, 2.0],
+        [0.40, 0.70, 1.0],
+        [1, 2, 4],
+    )
+)
 
 
 def _param_id(val):
-    w, l, ng = val
-    return f"W{w}_L{l}_NG{ng}"
+    width, length, ng = val
+    return f"W{width}_L{length}_NG{ng}"
 
 
 # -----------------------------------------------------------------------
 # nmos
 # -----------------------------------------------------------------------
 
-@pytest.mark.parametrize("w,l,ng", NMOS_PARAMS, ids=[_param_id(p) for p in NMOS_PARAMS])
-def test_xor_nmos(w, l, ng):
-    ref = pycell.nmos(w=w, l=l, ng=ng)
-    new = nmos(width=w, length=l, nf=ng)
+
+@pytest.mark.parametrize(
+    "width,length,ng", NMOS_PARAMS, ids=[_param_id(p) for p in NMOS_PARAMS]
+)
+def test_xor_nmos(width, length, ng):
+    ref = pycell.nmos(w=width, l=length, ng=ng)
+    new = nmos(width=width, length=length, nf=ng)
     failures = xor_cells(ref, new)
-    assert not failures, "\n".join(f"  [{k[0]:3d}/{k[1]}] {v}" for k, v in failures.items())
+    assert not failures, "\n".join(
+        f"  [{k[0]:3d}/{k[1]}] {v}" for k, v in failures.items()
+    )
 
 
 # -----------------------------------------------------------------------
 # pmos
 # -----------------------------------------------------------------------
 
-@pytest.mark.parametrize("w,l,ng", PMOS_PARAMS, ids=[_param_id(p) for p in PMOS_PARAMS])
-def test_xor_pmos(w, l, ng):
-    ref = pycell.pmos(w=w, l=l, ng=ng)
-    new = pmos(width=w, length=l, nf=ng)
+
+@pytest.mark.parametrize(
+    "width,length,ng", PMOS_PARAMS, ids=[_param_id(p) for p in PMOS_PARAMS]
+)
+def test_xor_pmos(width, length, ng):
+    ref = pycell.pmos(w=width, l=length, ng=ng)
+    new = pmos(width=width, length=length, nf=ng)
     failures = xor_cells(ref, new)
-    assert not failures, "\n".join(f"  [{k[0]:3d}/{k[1]}] {v}" for k, v in failures.items())
+    assert not failures, "\n".join(
+        f"  [{k[0]:3d}/{k[1]}] {v}" for k, v in failures.items()
+    )
 
 
 # -----------------------------------------------------------------------
 # nmosHV
 # -----------------------------------------------------------------------
 
-@pytest.mark.parametrize("w,l,ng", NMOSHV_PARAMS, ids=[_param_id(p) for p in NMOSHV_PARAMS])
-def test_xor_nmosHV(w, l, ng):
-    ref = pycell.nmosHV(w=w, l=l, ng=ng)
-    new = nmos_hv(width=w, length=l, nf=ng)
+
+@pytest.mark.parametrize(
+    "width,length,ng", NMOSHV_PARAMS, ids=[_param_id(p) for p in NMOSHV_PARAMS]
+)
+def test_xor_nmosHV(width, length, ng):
+    ref = pycell.nmosHV(w=width, l=length, ng=ng)
+    new = nmos_hv(width=width, length=length, nf=ng)
     failures = xor_cells(ref, new)
-    assert not failures, "\n".join(f"  [{k[0]:3d}/{k[1]}] {v}" for k, v in failures.items())
+    assert not failures, "\n".join(
+        f"  [{k[0]:3d}/{k[1]}] {v}" for k, v in failures.items()
+    )
 
 
 # -----------------------------------------------------------------------
 # pmosHV
 # -----------------------------------------------------------------------
 
-@pytest.mark.parametrize("w,l,ng", PMOSHV_PARAMS, ids=[_param_id(p) for p in PMOSHV_PARAMS])
-def test_xor_pmosHV(w, l, ng):
-    ref = pycell.pmosHV(w=w, l=l, ng=ng)
-    new = pmos_hv(width=w, length=l, nf=ng)
+
+@pytest.mark.parametrize(
+    "width,length,ng", PMOSHV_PARAMS, ids=[_param_id(p) for p in PMOSHV_PARAMS]
+)
+def test_xor_pmosHV(width, length, ng):
+    ref = pycell.pmosHV(w=width, l=length, ng=ng)
+    new = pmos_hv(width=width, length=length, nf=ng)
     failures = xor_cells(ref, new)
-    assert not failures, "\n".join(f"  [{k[0]:3d}/{k[1]}] {v}" for k, v in failures.items())
+    assert not failures, "\n".join(
+        f"  [{k[0]:3d}/{k[1]}] {v}" for k, v in failures.items()
+    )
