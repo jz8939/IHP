@@ -1,7 +1,15 @@
 info:
   vlsir:
     model: npn13G2
-    port_map: {}
+    params:
+      Nx: 1
+      Ny: 1
+      le: 0.0
+      we: 0.0
+    port_map:
+      B: b
+      C: c
+      E: e
     port_order:
     - c
     - b
@@ -9,5 +17,18 @@ info:
     - bn
     spice_lib: sg13g2_hbt_mod.lib
     spice_type: SUBCKT
-name: npn13G2
-settings: {}
+name: npn13G2_B0p3_B0p07_B0p1_E0p15_E0p18_S0p44_EL0p9_EW0p7_N_5249a3d6
+settings:
+  CMetY1: 0
+  CMetY2: 0
+  Nx: 1
+  Ny: 1
+  STI: 0.44
+  baspolyx: 0.3
+  bipwinx: 0.07
+  bipwiny: 0.1
+  emitter_length: 0.9
+  emitter_width: 0.7
+  empolyx: 0.15
+  empolyy: 0.18
+  text: npn13G2

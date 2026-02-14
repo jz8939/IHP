@@ -1,8 +1,25 @@
 """Bipolar transistor components for IHP PDK."""
 
-from functools import partial
+import warnings
+from functools import partial, wraps
 
 import gdsfactory as gf
+
+
+def deprecated(func):
+    """Mark a fixed-GDS cell as deprecated."""
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        warnings.warn(
+            f"{func.__name__} is deprecated. Use the pure-Python pcell equivalent.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return func(*args, **kwargs)
+
+    return wrapper
+
 
 from ..config import PATH
 
@@ -17,8 +34,9 @@ gdsdir = PATH.gds
 import_gds = partial(gf.import_gds, post_process=_add_ports)
 
 
+@deprecated
 @gf.cell
-def CuPillarPad() -> gf.Component:
+def CuPillarPad_fixed() -> gf.Component:
     """Returns CuPillarPad fixed cell.
 
     .. plot::
@@ -26,7 +44,7 @@ def CuPillarPad() -> gf.Component:
 
       import ihp
 
-      c = ihp.cells.CuPillarPad()
+      c = ihp.cells.CuPillarPad_fixed()
       c.plot()
     """
     c = import_gds(gdsdir / "CuPillarPad.gds")
@@ -46,8 +64,9 @@ def CuPillarPad() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def L2_IND_LVS() -> gf.Component:
+def L2_IND_LVS_fixed() -> gf.Component:
     """Returns L2_IND_LVS fixed cell.
 
     .. plot::
@@ -61,8 +80,9 @@ def L2_IND_LVS() -> gf.Component:
     return import_gds(gdsdir / "L2_IND_LVS.gds")
 
 
+@deprecated
 @gf.cell
-def M1_GatPoly_CDNS_675179387644() -> gf.Component:
+def M1_GatPoly_CDNS_675179387644_fixed() -> gf.Component:
     """Returns M1_GatPoly_CDNS_675179387644 fixed cell.
 
     .. plot::
@@ -76,8 +96,9 @@ def M1_GatPoly_CDNS_675179387644() -> gf.Component:
     return import_gds(gdsdir / "M1_GatPoly_CDNS_675179387644.gds")
 
 
+@deprecated
 @gf.cell
-def M2_M1_CDNS_675179387643() -> gf.Component:
+def M2_M1_CDNS_675179387643_fixed() -> gf.Component:
     """Returns M2_M1_CDNS_675179387643 fixed cell.
 
     .. plot::
@@ -91,8 +112,9 @@ def M2_M1_CDNS_675179387643() -> gf.Component:
     return import_gds(gdsdir / "M2_M1_CDNS_675179387643.gds")
 
 
+@deprecated
 @gf.cell
-def M3_M2_CDNS_675179387642() -> gf.Component:
+def M3_M2_CDNS_675179387642_fixed() -> gf.Component:
     """Returns M3_M2_CDNS_675179387642 fixed cell.
 
     .. plot::
@@ -106,8 +128,9 @@ def M3_M2_CDNS_675179387642() -> gf.Component:
     return import_gds(gdsdir / "M3_M2_CDNS_675179387642.gds")
 
 
+@deprecated
 @gf.cell
-def M4_M3_CDNS_675179387641() -> gf.Component:
+def M4_M3_CDNS_675179387641_fixed() -> gf.Component:
     """Returns M4_M3_CDNS_675179387641 fixed cell.
 
     .. plot::
@@ -121,8 +144,9 @@ def M4_M3_CDNS_675179387641() -> gf.Component:
     return import_gds(gdsdir / "M4_M3_CDNS_675179387641.gds")
 
 
+@deprecated
 @gf.cell
-def M5_M4_CDNS_675179387640() -> gf.Component:
+def M5_M4_CDNS_675179387640_fixed() -> gf.Component:
     """Returns M5_M4_CDNS_675179387640 fixed cell.
 
     .. plot::
@@ -136,8 +160,9 @@ def M5_M4_CDNS_675179387640() -> gf.Component:
     return import_gds(gdsdir / "M5_M4_CDNS_675179387640.gds")
 
 
+@deprecated
 @gf.cell
-def NoFillerStack() -> gf.Component:
+def NoFillerStack_fixed() -> gf.Component:
     """Returns NoFillerStack fixed cell.
 
     .. plot::
@@ -151,8 +176,9 @@ def NoFillerStack() -> gf.Component:
     return import_gds(gdsdir / "NoFillerStack.gds")
 
 
+@deprecated
 @gf.cell
-def SVaricap() -> gf.Component:
+def SVaricap_fixed() -> gf.Component:
     """Returns SVaricap fixed cell.
 
     .. plot::
@@ -175,8 +201,9 @@ def SVaricap() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def TM1_M5_CDNS_675179387645() -> gf.Component:
+def TM1_M5_CDNS_675179387645_fixed() -> gf.Component:
     """Returns TM1_M5_CDNS_675179387645 fixed cell.
 
     .. plot::
@@ -190,8 +217,9 @@ def TM1_M5_CDNS_675179387645() -> gf.Component:
     return import_gds(gdsdir / "TM1_M5_CDNS_675179387645.gds")
 
 
+@deprecated
 @gf.cell
-def TM2_TM1_CDNS_675179387646() -> gf.Component:
+def TM2_TM1_CDNS_675179387646_fixed() -> gf.Component:
     """Returns TM2_TM1_CDNS_675179387646 fixed cell.
 
     .. plot::
@@ -205,8 +233,9 @@ def TM2_TM1_CDNS_675179387646() -> gf.Component:
     return import_gds(gdsdir / "TM2_TM1_CDNS_675179387646.gds")
 
 
+@deprecated
 @gf.cell
-def TSV() -> gf.Component:
+def TSV_fixed() -> gf.Component:
     """Returns TSV fixed cell.
 
     .. plot::
@@ -220,8 +249,9 @@ def TSV() -> gf.Component:
     return import_gds(gdsdir / "TSV.gds")
 
 
+@deprecated
 @gf.cell
-def ViaStack() -> gf.Component:
+def ViaStack_fixed() -> gf.Component:
     """Returns ViaStack fixed cell.
 
     .. plot::
@@ -235,8 +265,9 @@ def ViaStack() -> gf.Component:
     return import_gds(gdsdir / "ViaStack.gds")
 
 
+@deprecated
 @gf.cell
-def bondpad() -> gf.Component:
+def bondpad_fixed() -> gf.Component:
     """Returns bondpad fixed cell.
 
     .. plot::
@@ -259,8 +290,9 @@ def bondpad() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def chipText() -> gf.Component:
+def chipText_fixed() -> gf.Component:
     """Returns chipText fixed cell.
 
     .. plot::
@@ -274,8 +306,9 @@ def chipText() -> gf.Component:
     return import_gds(gdsdir / "chipText.gds")
 
 
+@deprecated
 @gf.cell
-def cmim_fixed() -> gf.Component:
+def cmim_fixed_fixed() -> gf.Component:
     """Returns cmim fixed cell.
 
     .. plot::
@@ -298,8 +331,9 @@ def cmim_fixed() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def colors_and_stipples() -> gf.Component:
+def colors_and_stipples_fixed() -> gf.Component:
     """Returns colors_and_stipples fixed cell.
 
     .. plot::
@@ -313,8 +347,9 @@ def colors_and_stipples() -> gf.Component:
     return import_gds(gdsdir / "colors_and_stipples.gds")
 
 
+@deprecated
 @gf.cell
-def dantenna() -> gf.Component:
+def dantenna_fixed() -> gf.Component:
     """Returns dantenna fixed cell.
 
     .. plot::
@@ -337,8 +372,9 @@ def dantenna() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def diffstbprobe() -> gf.Component:
+def diffstbprobe_fixed() -> gf.Component:
     """Returns diffstbprobe fixed cell.
 
     .. plot::
@@ -352,8 +388,9 @@ def diffstbprobe() -> gf.Component:
     return import_gds(gdsdir / "diffstbprobe.gds")
 
 
+@deprecated
 @gf.cell
-def diodevdd_2kv() -> gf.Component:
+def diodevdd_2kv_fixed() -> gf.Component:
     """Returns diodevdd_2kv fixed cell.
 
     .. plot::
@@ -376,8 +413,9 @@ def diodevdd_2kv() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def diodevdd_4kv() -> gf.Component:
+def diodevdd_4kv_fixed() -> gf.Component:
     """Returns diodevdd_4kv fixed cell.
 
     .. plot::
@@ -400,8 +438,9 @@ def diodevdd_4kv() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def diodevss_2kv() -> gf.Component:
+def diodevss_2kv_fixed() -> gf.Component:
     """Returns diodevss_2kv fixed cell.
 
     .. plot::
@@ -424,8 +463,9 @@ def diodevss_2kv() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def diodevss_4kv() -> gf.Component:
+def diodevss_4kv_fixed() -> gf.Component:
     """Returns diodevss_4kv fixed cell.
 
     .. plot::
@@ -448,8 +488,9 @@ def diodevss_4kv() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def dpantenna() -> gf.Component:
+def dpantenna_fixed() -> gf.Component:
     """Returns dpantenna fixed cell.
 
     .. plot::
@@ -472,8 +513,9 @@ def dpantenna() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def dummy1() -> gf.Component:
+def dummy1_fixed() -> gf.Component:
     """Returns dummy1 fixed cell.
 
     .. plot::
@@ -496,8 +538,9 @@ def dummy1() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def inductor2_fixed() -> gf.Component:
+def inductor2_fixed_fixed() -> gf.Component:
     """Returns inductor2 fixed cell.
 
     .. plot::
@@ -511,8 +554,9 @@ def inductor2_fixed() -> gf.Component:
     return import_gds(gdsdir / "inductor2.gds")
 
 
+@deprecated
 @gf.cell
-def inductor3() -> gf.Component:
+def inductor3_fixed() -> gf.Component:
     """Returns inductor3 fixed cell.
 
     .. plot::
@@ -526,8 +570,9 @@ def inductor3() -> gf.Component:
     return import_gds(gdsdir / "inductor3.gds")
 
 
+@deprecated
 @gf.cell
-def iprobe() -> gf.Component:
+def iprobe_fixed() -> gf.Component:
     """Returns iprobe fixed cell.
 
     .. plot::
@@ -541,8 +586,9 @@ def iprobe() -> gf.Component:
     return import_gds(gdsdir / "iprobe.gds")
 
 
+@deprecated
 @gf.cell
-def isolbox() -> gf.Component:
+def isolbox_fixed() -> gf.Component:
     """Returns isolbox fixed cell.
 
     .. plot::
@@ -565,8 +611,9 @@ def isolbox() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def lvsres() -> gf.Component:
+def lvsres_fixed() -> gf.Component:
     """Returns lvsres fixed cell.
 
     .. plot::
@@ -580,8 +627,9 @@ def lvsres() -> gf.Component:
     return import_gds(gdsdir / "lvsres.gds")
 
 
+@deprecated
 @gf.cell
-def nmos() -> gf.Component:
+def nmos_fixed() -> gf.Component:
     """Returns nmos fixed cell.
 
     .. plot::
@@ -604,8 +652,9 @@ def nmos() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def nmosHV() -> gf.Component:
+def nmosHV_fixed() -> gf.Component:
     """Returns nmosHV fixed cell.
 
     .. plot::
@@ -628,8 +677,9 @@ def nmosHV() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def nmoscl_2() -> gf.Component:
+def nmoscl_2_fixed() -> gf.Component:
     """Returns nmoscl_2 fixed cell.
 
     .. plot::
@@ -652,8 +702,9 @@ def nmoscl_2() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def nmoscl_4() -> gf.Component:
+def nmoscl_4_fixed() -> gf.Component:
     """Returns nmoscl_4 fixed cell.
 
     .. plot::
@@ -676,8 +727,9 @@ def nmoscl_4() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def npn13G2() -> gf.Component:
+def npn13G2_fixed() -> gf.Component:
     """Returns npn13G2 fixed cell.
 
     .. plot::
@@ -700,8 +752,9 @@ def npn13G2() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def npn13G2L() -> gf.Component:
+def npn13G2L_fixed() -> gf.Component:
     """Returns npn13G2L fixed cell.
 
     .. plot::
@@ -724,8 +777,9 @@ def npn13G2L() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def npn13G2V() -> gf.Component:
+def npn13G2V_fixed() -> gf.Component:
     """Returns npn13G2V fixed cell.
 
     .. plot::
@@ -748,8 +802,9 @@ def npn13G2V() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def npn13G2_base_CDNS_675179387640() -> gf.Component:
+def npn13G2_base_CDNS_675179387640_fixed() -> gf.Component:
     """Returns npn13G2_base_CDNS_675179387640 fixed cell.
 
     .. plot::
@@ -763,8 +818,9 @@ def npn13G2_base_CDNS_675179387640() -> gf.Component:
     return import_gds(gdsdir / "npn13G2_base_CDNS_675179387640.gds")
 
 
+@deprecated
 @gf.cell
-def ntap() -> gf.Component:
+def ntap_fixed() -> gf.Component:
     """Returns ntap fixed cell.
 
     .. plot::
@@ -779,8 +835,9 @@ def ntap() -> gf.Component:
     return import_gds(gdsdir / "ntap.gds")
 
 
+@deprecated
 @gf.cell
-def ntap1() -> gf.Component:
+def ntap1_fixed() -> gf.Component:
     """Returns ntap1 fixed cell.
 
     .. plot::
@@ -803,8 +860,9 @@ def ntap1() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def pmos() -> gf.Component:
+def pmos_fixed() -> gf.Component:
     """Returns pmos fixed cell.
 
     .. plot::
@@ -827,8 +885,9 @@ def pmos() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def pmosHV() -> gf.Component:
+def pmosHV_fixed() -> gf.Component:
     """Returns pmosHV fixed cell.
 
     .. plot::
@@ -851,8 +910,9 @@ def pmosHV() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def pnpMPA() -> gf.Component:
+def pnpMPA_fixed() -> gf.Component:
     """Returns pnpMPA fixed cell.
 
     .. plot::
@@ -875,8 +935,9 @@ def pnpMPA() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def ptap() -> gf.Component:
+def ptap_fixed() -> gf.Component:
     """Returns ptap fixed cell.
 
     .. plot::
@@ -891,8 +952,9 @@ def ptap() -> gf.Component:
     return import_gds(gdsdir / "ptap.gds")
 
 
+@deprecated
 @gf.cell
-def ptap1() -> gf.Component:
+def ptap1_fixed() -> gf.Component:
     """Returns ptap1 fixed cell.
 
     .. plot::
@@ -915,8 +977,9 @@ def ptap1() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def rfcmim() -> gf.Component:
+def rfcmim_fixed() -> gf.Component:
     """Returns rfcmim fixed cell.
 
     .. plot::
@@ -939,8 +1002,9 @@ def rfcmim() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def rfnmos() -> gf.Component:
+def rfnmos_fixed() -> gf.Component:
     """Returns rfnmos fixed cell.
 
     .. plot::
@@ -964,8 +1028,9 @@ def rfnmos() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def rfnmosHV() -> gf.Component:
+def rfnmosHV_fixed() -> gf.Component:
     """Returns rfnmosHV fixed cell.
 
     .. plot::
@@ -989,8 +1054,9 @@ def rfnmosHV() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def rfpmos() -> gf.Component:
+def rfpmos_fixed() -> gf.Component:
     """Returns rfpmos fixed cell.
 
     .. plot::
@@ -1014,8 +1080,9 @@ def rfpmos() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def rfpmosHV() -> gf.Component:
+def rfpmosHV_fixed() -> gf.Component:
     """Returns rfpmosHV fixed cell.
 
     .. plot::
@@ -1039,8 +1106,9 @@ def rfpmosHV() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def rhigh() -> gf.Component:
+def rhigh_fixed() -> gf.Component:
     """Returns rhigh fixed cell.
 
     .. plot::
@@ -1063,8 +1131,9 @@ def rhigh() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def rppd() -> gf.Component:
+def rppd_fixed() -> gf.Component:
     """Returns rppd fixed cell.
 
     .. plot::
@@ -1087,8 +1156,9 @@ def rppd() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def rsil() -> gf.Component:
+def rsil_fixed() -> gf.Component:
     """Returns rsil fixed cell.
 
     .. plot::
@@ -1111,8 +1181,9 @@ def rsil() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def schottky_nbl1() -> gf.Component:
+def schottky_nbl1_fixed() -> gf.Component:
     """Returns schottky_nbl1 fixed cell.
 
     .. plot::
@@ -1135,8 +1206,9 @@ def schottky_nbl1() -> gf.Component:
     return c
 
 
+@deprecated
 @gf.cell
-def scr1() -> gf.Component:
+def scr1_fixed() -> gf.Component:
     """Returns scr1 fixed cell.
 
     .. plot::
@@ -1150,8 +1222,9 @@ def scr1() -> gf.Component:
     return import_gds(gdsdir / "scr1.gds")
 
 
+@deprecated
 @gf.cell
-def sealring_CDNS_675179387642() -> gf.Component:
+def sealring_CDNS_675179387642_fixed() -> gf.Component:
     """Returns sealring_CDNS_675179387642 fixed cell.
 
     .. plot::
@@ -1165,8 +1238,9 @@ def sealring_CDNS_675179387642() -> gf.Component:
     return import_gds(gdsdir / "sealring_CDNS_675179387642.gds")
 
 
+@deprecated
 @gf.cell
-def sealring_complete() -> gf.Component:
+def sealring_complete_fixed() -> gf.Component:
     """Returns sealring_complete fixed cell.
 
     .. plot::
@@ -1180,8 +1254,9 @@ def sealring_complete() -> gf.Component:
     return import_gds(gdsdir / "sealring_complete.gds")
 
 
+@deprecated
 @gf.cell
-def sealring_corner_CDNS_675179387641() -> gf.Component:
+def sealring_corner_CDNS_675179387641_fixed() -> gf.Component:
     """Returns sealring_corner_CDNS_675179387641 fixed cell.
 
     .. plot::
@@ -1200,6 +1275,6 @@ if __name__ == "__main__":
 
     PDK.activate()
     # c = sealring_corner_CDNS_675179387641()
-    c = CuPillarPad()
+    c = CuPillarPad_fixed()
     c.pprint_ports()
     c.show()

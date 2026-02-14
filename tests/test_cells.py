@@ -29,10 +29,6 @@ skip_test = {
     "pack_doe",
     "pack_doe_grid",
     "import_gds",
-    "nmos_hv",  # reference GDS not found
-    "pmos_hv",  # reference GDS not found
-    "rfnmos_hv",  # reference GDS not yet generated
-    "rfpmos_hv",  # reference GDS not yet generated
     "subckt",  # requires mocking with model and ports
     "svaricap",
     "SVaricap",

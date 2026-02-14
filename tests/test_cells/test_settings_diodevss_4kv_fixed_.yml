@@ -1,0 +1,12 @@
+info:
+  vlsir:
+    model: diodevss_4kv
+    port_map: {}
+    port_order:
+    - VDD
+    - PAD
+    - VSS
+    spice_lib: sg13g2_esd.lib
+    spice_type: SUBCKT
+name: diodevss_4kv_fixed
+settings: {}

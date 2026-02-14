@@ -1,12 +1,17 @@
 info:
   vlsir:
     model: pnpMPA
-    port_map: {}
+    port_map:
+      MINUS: c
+      PLUS: e
+      TIE: b
     port_order:
     - c
     - b
     - e
     spice_lib: sg13g2_hbt_mod.lib
     spice_type: SUBCKT
-name: pnpMPA
-settings: {}
+name: pnpMPA_L2_W0p7
+settings:
+  length: 2
+  width: 0.7
