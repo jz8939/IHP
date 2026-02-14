@@ -529,7 +529,21 @@ def nmos(
 
     Returns:
         Component with NMOS transistor layout.
+
+    Raises:
+        ValueError: If width, length, or nf is outside allowed range.
     """
+    if width < TECH.nmos_min_width or width > TECH.nmos_max_width:
+        raise ValueError(
+            f"nmos width={width} out of range [{TECH.nmos_min_width}, {TECH.nmos_max_width}]"
+        )
+    if length < TECH.nmos_min_length or length > TECH.nmos_max_length:
+        raise ValueError(
+            f"nmos length={length} out of range [{TECH.nmos_min_length}, {TECH.nmos_max_length}]"
+        )
+    if nf < 1 or nf > TECH.nmos_max_nf:
+        raise ValueError(f"nmos nf={nf} out of range [1, {TECH.nmos_max_nf}]")
+
     c = _mos_core(width, length, nf, is_pmos=False, is_hv=False)
 
     # VLSIR simulation metadata
@@ -569,7 +583,21 @@ def pmos(
 
     Returns:
         Component with PMOS transistor layout.
+
+    Raises:
+        ValueError: If width, length, or nf is outside allowed range.
     """
+    if width < TECH.pmos_min_width or width > TECH.pmos_max_width:
+        raise ValueError(
+            f"pmos width={width} out of range [{TECH.pmos_min_width}, {TECH.pmos_max_width}]"
+        )
+    if length < TECH.pmos_min_length or length > TECH.pmos_max_length:
+        raise ValueError(
+            f"pmos length={length} out of range [{TECH.pmos_min_length}, {TECH.pmos_max_length}]"
+        )
+    if nf < 1 or nf > TECH.pmos_max_nf:
+        raise ValueError(f"pmos nf={nf} out of range [1, {TECH.pmos_max_nf}]")
+
     c = _mos_core(width, length, nf, is_pmos=True, is_hv=False)
 
     # VLSIR simulation metadata
@@ -609,7 +637,21 @@ def nmos_hv(
 
     Returns:
         Component with HV NMOS transistor layout.
+
+    Raises:
+        ValueError: If width, length, or nf is outside allowed range.
     """
+    if width < TECH.nmos_hv_min_width or width > TECH.nmos_hv_max_width:
+        raise ValueError(
+            f"nmos_hv width={width} out of range [{TECH.nmos_hv_min_width}, {TECH.nmos_hv_max_width}]"
+        )
+    if length < TECH.nmos_hv_min_length or length > TECH.nmos_hv_max_length:
+        raise ValueError(
+            f"nmos_hv length={length} out of range [{TECH.nmos_hv_min_length}, {TECH.nmos_hv_max_length}]"
+        )
+    if nf < 1 or nf > TECH.nmos_hv_max_nf:
+        raise ValueError(f"nmos_hv nf={nf} out of range [1, {TECH.nmos_hv_max_nf}]")
+
     c = _mos_core(width, length, nf, is_pmos=False, is_hv=True)
 
     # VLSIR simulation metadata
@@ -649,7 +691,21 @@ def pmos_hv(
 
     Returns:
         Component with HV PMOS transistor layout.
+
+    Raises:
+        ValueError: If width, length, or nf is outside allowed range.
     """
+    if width < TECH.pmos_hv_min_width or width > TECH.pmos_hv_max_width:
+        raise ValueError(
+            f"pmos_hv width={width} out of range [{TECH.pmos_hv_min_width}, {TECH.pmos_hv_max_width}]"
+        )
+    if length < TECH.pmos_hv_min_length or length > TECH.pmos_hv_max_length:
+        raise ValueError(
+            f"pmos_hv length={length} out of range [{TECH.pmos_hv_min_length}, {TECH.pmos_hv_max_length}]"
+        )
+    if nf < 1 or nf > TECH.pmos_hv_max_nf:
+        raise ValueError(f"pmos_hv nf={nf} out of range [1, {TECH.pmos_hv_max_nf}]")
+
     c = _mos_core(width, length, nf, is_pmos=True, is_hv=True)
 
     # VLSIR simulation metadata

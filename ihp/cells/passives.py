@@ -392,7 +392,19 @@ def ptap1(
 
     Returns:
         Component with P+ tap layout.
+
+    Raises:
+        ValueError: If width or length is outside allowed range.
     """
+    if width < tech.TECH.ptap1_min_size or width > tech.TECH.ptap1_max_size:
+        raise ValueError(
+            f"ptap1 width={width} out of range [{tech.TECH.ptap1_min_size}, {tech.TECH.ptap1_max_size}]"
+        )
+    if length < tech.TECH.ptap1_min_size or length > tech.TECH.ptap1_max_size:
+        raise ValueError(
+            f"ptap1 length={length} out of range [{tech.TECH.ptap1_min_size}, {tech.TECH.ptap1_max_size}]"
+        )
+
     c = Component()
 
     # Design rules
@@ -508,7 +520,19 @@ def ntap1(
 
     Returns:
         Component with N+ tap layout.
+
+    Raises:
+        ValueError: If width or length is outside allowed range.
     """
+    if width < tech.TECH.ntap1_min_size or width > tech.TECH.ntap1_max_size:
+        raise ValueError(
+            f"ntap1 width={width} out of range [{tech.TECH.ntap1_min_size}, {tech.TECH.ntap1_max_size}]"
+        )
+    if length < tech.TECH.ntap1_min_size or length > tech.TECH.ntap1_max_size:
+        raise ValueError(
+            f"ntap1 length={length} out of range [{tech.TECH.ntap1_min_size}, {tech.TECH.ntap1_max_size}]"
+        )
+
     c = Component()
 
     # Design rules
@@ -649,7 +673,19 @@ def sealring(
 
     Returns:
         Component with seal ring layout.
+
+    Raises:
+        ValueError: If width or height is outside allowed range.
     """
+    if width < tech.TECH.sealring_min_width or width > tech.TECH.sealring_max_width:
+        raise ValueError(
+            f"sealring width={width} out of range [{tech.TECH.sealring_min_width}, {tech.TECH.sealring_max_width}]"
+        )
+    if height < tech.TECH.sealring_min_height or height > tech.TECH.sealring_max_height:
+        raise ValueError(
+            f"sealring height={height} out of range [{tech.TECH.sealring_min_height}, {tech.TECH.sealring_max_height}]"
+        )
+
     c = Component()
 
     # Create seal ring on all metal layers
