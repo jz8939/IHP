@@ -75,7 +75,7 @@ ihp/
 ├── cells/                  # Pure GDSFactory parametric layout cells
 │   ├── fet_transistors.py  #   NMOS/PMOS (standard & HV)
 │   ├── rf_transistors.py   #   RF-MOSFETs with guard/gate rings
-│   ├── bipolar.py          #   SiGe HBTs (npn13G2, npn13G2L, npn13G2V)
+│   ├── bjt_transistors.py   #   SiGe HBTs (npn13G2, npn13G2L, npn13G2V, pnpMPA)
 │   ├── resistors.py        #   Polysilicon & metal resistors
 │   ├── capacitors.py       #   MIM & MOS capacitors
 │   ├── inductors.py        #   Spiral inductors

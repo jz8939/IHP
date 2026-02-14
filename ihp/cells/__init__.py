@@ -1,6 +1,6 @@
 """Cells."""
 
-from .bipolar import *
+from .bjt_transistors import *
 from .bondpads import *
 from .capacitors import *
 from .containers import *

@@ -9,11 +9,11 @@ The gold standard for this pattern is bjt_transistors.py.
 
 from __future__ import annotations
 
-import importlib
-
+import klayout.db as kdb
 import pytest
 
 from ihp import PDK
+from ihp.cells import bjt_transistors as bjt_mod
 from ihp.cells import bondpads as bondpads_mod
 from ihp.cells import capacitors as capacitors_mod
 from ihp.cells import fet_transistors as fet_mod
@@ -22,9 +22,6 @@ from ihp.cells import passives as passives_mod
 from ihp.cells import resistors as resistors_mod
 from ihp.cells import rf_transistors as rf_mod
 from ihp.cells import via_stacks as via_mod
-
-# bipolar module is shadowed by primitives.bipolar() function in ihp.cells namespace
-bipolar_mod = importlib.import_module("ihp.cells.bipolar")
 
 
 @pytest.fixture(autouse=True)
@@ -59,9 +56,9 @@ CELLS_TO_TEST = [
     ("cmom", capacitors_mod.cmom, {}),
     ("cmim", capacitors_mod.cmim, {}),
     ("rfcmim", capacitors_mod.rfcmim, {}),
-    # Bipolar (simplified)
-    ("bipolar_npn13G2", bipolar_mod.npn13G2, {}),
-    ("bipolar_pnpMPA", bipolar_mod.pnpMPA, {}),
+    # BJT transistors
+    ("npn13G2", bjt_mod.npn13G2, {}),
+    ("pnpMPA", bjt_mod.pnpMPA, {}),
     # Bondpads
     ("bondpad", bondpads_mod.bondpad, {}),
     ("bondpad_array", bondpads_mod.bondpad_array, {}),
@@ -108,4 +105,37 @@ def test_port_layer_is_pin_sublayer(name, factory, kwargs):
         assert datatype == 2, (
             f"{name}.ports['{port.name}'] layer=({layer_num}, {datatype}), "
             f"expected datatype=2 (pin sublayer)"
+        )
+
+
+@pytest.mark.parametrize(
+    "name,factory,kwargs",
+    CELLS_TO_TEST,
+    ids=[t[0] for t in CELLS_TO_TEST],
+)
+def test_port_pin_overlaps_drawing(name, factory, kwargs):
+    """Each port's pin sublayer must overlap drawing geometry on the same layer number."""
+    comp = factory(**kwargs)
+    assert len(comp.ports) > 0, f"{name} has no ports"
+    kcell = comp._kf_cell if hasattr(comp, "_kf_cell") else comp
+    layout = kcell.layout()
+
+    for port in comp.ports:
+        layer_num, _datatype = _resolve_layer(comp, port)
+        draw_li = layout.find_layer(layer_num, 0)
+        assert draw_li is not None, (
+            f"{name}.ports['{port.name}'] pin layer ({layer_num}, 2) "
+            f"has no corresponding drawing layer ({layer_num}, 0)"
+        )
+
+        draw_region = kdb.Region(kcell.begin_shapes_rec(draw_li))
+        dbu = layout.dbu
+        x, y = port.center
+        x_dbu = int(round(x / dbu))
+        y_dbu = int(round(y / dbu))
+        probe = kdb.Region(kdb.Box(x_dbu - 10, y_dbu - 10, x_dbu + 10, y_dbu + 10))
+        overlap = draw_region & probe
+        assert not overlap.is_empty(), (
+            f"{name}.ports['{port.name}'] at ({x}, {y}) on pin layer "
+            f"({layer_num}, 2) does not overlap drawing geometry on ({layer_num}, 0)"
         )
