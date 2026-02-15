@@ -911,7 +911,21 @@ def rfnmos(
 
     Returns:
         Component with RF NMOS transistor layout.
+
+    Raises:
+        ValueError: If width, length, or nf is outside allowed range.
     """
+    if width < TECH.rfnmos_min_width or width > TECH.rfnmos_max_width:
+        raise ValueError(
+            f"rfnmos width={width} out of range [{TECH.rfnmos_min_width}, {TECH.rfnmos_max_width}]"
+        )
+    if length < TECH.rfnmos_min_length or length > TECH.rfnmos_max_length:
+        raise ValueError(
+            f"rfnmos length={length} out of range [{TECH.rfnmos_min_length}, {TECH.rfnmos_max_length}]"
+        )
+    if nf < 1 or nf > TECH.rfnmos_max_nf:
+        raise ValueError(f"rfnmos nf={nf} out of range [1, {TECH.rfnmos_max_nf}]")
+
     c = _rf_mos_core(
         width,
         length,
@@ -967,7 +981,21 @@ def rfpmos(
 
     Returns:
         Component with RF PMOS transistor layout.
+
+    Raises:
+        ValueError: If width, length, or nf is outside allowed range.
     """
+    if width < TECH.rfpmos_min_width or width > TECH.rfpmos_max_width:
+        raise ValueError(
+            f"rfpmos width={width} out of range [{TECH.rfpmos_min_width}, {TECH.rfpmos_max_width}]"
+        )
+    if length < TECH.rfpmos_min_length or length > TECH.rfpmos_max_length:
+        raise ValueError(
+            f"rfpmos length={length} out of range [{TECH.rfpmos_min_length}, {TECH.rfpmos_max_length}]"
+        )
+    if nf < 1 or nf > TECH.rfpmos_max_nf:
+        raise ValueError(f"rfpmos nf={nf} out of range [1, {TECH.rfpmos_max_nf}]")
+
     c = _rf_mos_core(
         width,
         length,
@@ -1023,7 +1051,21 @@ def rfnmos_hv(
 
     Returns:
         Component with HV RF NMOS transistor layout.
+
+    Raises:
+        ValueError: If width, length, or nf is outside allowed range.
     """
+    if width < TECH.rfnmos_hv_min_width or width > TECH.rfnmos_hv_max_width:
+        raise ValueError(
+            f"rfnmos_hv width={width} out of range [{TECH.rfnmos_hv_min_width}, {TECH.rfnmos_hv_max_width}]"
+        )
+    if length < TECH.rfnmos_hv_min_length or length > TECH.rfnmos_hv_max_length:
+        raise ValueError(
+            f"rfnmos_hv length={length} out of range [{TECH.rfnmos_hv_min_length}, {TECH.rfnmos_hv_max_length}]"
+        )
+    if nf < 1 or nf > TECH.rfnmos_hv_max_nf:
+        raise ValueError(f"rfnmos_hv nf={nf} out of range [1, {TECH.rfnmos_hv_max_nf}]")
+
     c = _rf_mos_core(
         width,
         length,
@@ -1079,7 +1121,21 @@ def rfpmos_hv(
 
     Returns:
         Component with HV RF PMOS transistor layout.
+
+    Raises:
+        ValueError: If width, length, or nf is outside allowed range.
     """
+    if width < TECH.rfpmos_hv_min_width or width > TECH.rfpmos_hv_max_width:
+        raise ValueError(
+            f"rfpmos_hv width={width} out of range [{TECH.rfpmos_hv_min_width}, {TECH.rfpmos_hv_max_width}]"
+        )
+    if length < TECH.rfpmos_hv_min_length or length > TECH.rfpmos_hv_max_length:
+        raise ValueError(
+            f"rfpmos_hv length={length} out of range [{TECH.rfpmos_hv_min_length}, {TECH.rfpmos_hv_max_length}]"
+        )
+    if nf < 1 or nf > TECH.rfpmos_hv_max_nf:
+        raise ValueError(f"rfpmos_hv nf={nf} out of range [1, {TECH.rfpmos_hv_max_nf}]")
+
     c = _rf_mos_core(
         width,
         length,

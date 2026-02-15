@@ -7,6 +7,7 @@ import gdsfactory as gf
 from gdsfactory.typings import LayerSpec
 
 from cni.tech import Tech
+from ihp.tech import TECH as _TECH
 
 tech_name = "SG13_dev"
 tech = Tech.get("SG13_dev").getTechParams()
@@ -157,17 +158,20 @@ def dantenna(
 
     Returns:
         gdsfactory.Component: The generated antenna component.
+
+    Raises:
+        ValueError: If width or length is outside allowed range.
     """
+    if width < _TECH.dantenna_min_width or width > _TECH.dantenna_max_width:
+        raise ValueError(
+            f"dantenna width={width} out of range [{_TECH.dantenna_min_width}, {_TECH.dantenna_max_width}]"
+        )
+    if length < _TECH.dantenna_min_length or length > _TECH.dantenna_max_length:
+        raise ValueError(
+            f"dantenna length={length} out of range [{_TECH.dantenna_min_length}, {_TECH.dantenna_max_length}]"
+        )
 
     c = gf.Component()
-
-    wmin = float(tech["dantenna_minW"].rstrip("u"))
-    lmin = float(tech["dantenna_minL"].rstrip("u"))
-
-    if width < wmin:
-        width = wmin
-    if length < lmin:
-        length = lmin
 
     layer_metal1: LayerSpec = "Metal1drawing"
     ndiff_layer: LayerSpec = "Activdrawing"
@@ -274,17 +278,20 @@ def dpantenna(
 
     Returns:
         gdsfactory.Component: The generated antenna component.
+
+    Raises:
+        ValueError: If width or length is outside allowed range.
     """
+    if width < _TECH.dpantenna_min_width or width > _TECH.dpantenna_max_width:
+        raise ValueError(
+            f"dpantenna width={width} out of range [{_TECH.dpantenna_min_width}, {_TECH.dpantenna_max_width}]"
+        )
+    if length < _TECH.dpantenna_min_length or length > _TECH.dpantenna_max_length:
+        raise ValueError(
+            f"dpantenna length={length} out of range [{_TECH.dpantenna_min_length}, {_TECH.dpantenna_max_length}]"
+        )
 
     c = gf.Component()
-
-    wmin = float(tech["dantenna_minW"].rstrip("u"))
-    lmin = float(tech["dantenna_minL"].rstrip("u"))
-
-    if width < wmin:
-        width = wmin
-    if length < lmin:
-        length = lmin
 
     layer_metal1: LayerSpec = "Metal1drawing"
     pdiff_layer: LayerSpec = "Activdrawing"

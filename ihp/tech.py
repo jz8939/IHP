@@ -801,16 +801,8 @@ class TechIHP(BaseModel):
     topmetal2_spacing: float = 2.0
 
     # Design rules - resistors
-    rsil_min_width: float = 0.4
-    rsil_min_length: float = 0.8
     rsil_sheet_res: float = 7.0  # ohms/square
-
-    rppd_min_width: float = 0.4
-    rppd_min_length: float = 0.8
     rppd_sheet_res: float = 300.0  # ohms/square
-
-    rhigh_min_width: float = 1.4
-    rhigh_min_length: float = 5.0
     rhigh_sheet_res: float = 1350.0  # ohms/square
 
     # Design rules - capacitors
@@ -886,6 +878,115 @@ class TechIHP(BaseModel):
     rf_nw_pmos_lv: float = 0.31  # NWell extension (PMOS LV)
 
     rf_gate_pin_half_width: float = 0.1
+
+    # --- Device sizing limits (from sg13g2_tech.json) ---
+
+    # NMOS (LV)
+    nmos_max_width: float = 10.0
+    nmos_max_length: float = 10.0
+    nmos_max_nf: int = 100
+
+    # PMOS (LV)
+    pmos_max_width: float = 10.0
+    pmos_max_length: float = 10.0
+    pmos_max_nf: int = 100
+
+    # NMOS HV
+    nmos_hv_min_width: float = 0.30
+    nmos_hv_max_width: float = 10.0
+    nmos_hv_min_length: float = 0.45
+    nmos_hv_max_length: float = 10.0
+    nmos_hv_max_nf: int = 100
+
+    # PMOS HV
+    pmos_hv_min_width: float = 0.30
+    pmos_hv_max_width: float = 10.0
+    pmos_hv_min_length: float = 0.40
+    pmos_hv_max_length: float = 10.0
+    pmos_hv_max_nf: int = 100
+
+    # RF NMOS (LV)
+    rfnmos_min_width: float = 0.15
+    rfnmos_max_width: float = 10.0
+    rfnmos_min_length: float = 0.13
+    rfnmos_max_length: float = 10.0
+    rfnmos_max_nf: int = 40
+
+    # RF PMOS (LV)
+    rfpmos_min_width: float = 0.15
+    rfpmos_max_width: float = 10.0
+    rfpmos_min_length: float = 0.13
+    rfpmos_max_length: float = 10.0
+    rfpmos_max_nf: int = 40
+
+    # RF NMOS HV
+    rfnmos_hv_min_width: float = 0.33
+    rfnmos_hv_max_width: float = 10.0
+    rfnmos_hv_min_length: float = 0.45
+    rfnmos_hv_max_length: float = 10.0
+    rfnmos_hv_max_nf: int = 40
+
+    # RF PMOS HV
+    rfpmos_hv_min_width: float = 0.39
+    rfpmos_hv_max_width: float = 10.0
+    rfpmos_hv_min_length: float = 0.40
+    rfpmos_hv_max_length: float = 10.0
+    rfpmos_hv_max_nf: int = 40
+
+    # BJT NPN (npn13G2, npn13G2L, npn13G2V) - only Nx validated;
+    # emitter dimensions are fixed-size in the JSON but variable in our cells.
+    npn_min_nx: int = 1
+    npn_max_nx: int = 10
+
+    # BJT PNP (pnpMPA)
+    pnp_min_length: float = 0.68
+    pnp_max_length: float = 1000.0
+    pnp_min_width: float = 0.30
+    pnp_max_width: float = 2.0
+
+    # Resistors
+    rsil_min_width: float = 0.50
+    rsil_max_width: float = 1000.0
+    rsil_min_length: float = 0.50
+    rsil_max_length: float = 1000.0
+
+    rppd_min_width: float = 0.50
+    rppd_max_width: float = 1000.0
+    rppd_min_length: float = 0.50
+    rppd_max_length: float = 1000.0
+
+    rhigh_min_width: float = 0.50
+    rhigh_max_width: float = 1000.0
+    rhigh_min_length: float = 0.96
+    rhigh_max_length: float = 1000.0
+
+    # Capacitors
+    cmim_min_size: float = 1.14
+    cmim_max_size: float = 1000.0
+    rfcmim_min_size: float = 7.0
+    rfcmim_max_size: float = 1000.0
+
+    # Taps
+    ptap1_min_size: float = 0.78
+    ptap1_max_size: float = 10_000_000.0
+    ntap1_min_size: float = 0.78
+    ntap1_max_size: float = 10_000.0
+
+    # Antennas
+    dantenna_min_width: float = 0.48
+    dantenna_max_width: float = 1000.0
+    dantenna_min_length: float = 0.48
+    dantenna_max_length: float = 1000.0
+    dpantenna_min_width: float = 0.48
+    dpantenna_max_width: float = 1000.0
+    dpantenna_min_length: float = 0.48
+    dpantenna_max_length: float = 1000.0
+
+    # Sealring
+    sealring_min_width: float = 150.0
+    sealring_max_width: float = 32000.0
+    sealring_min_height: float = 150.0
+    sealring_max_height: float = 25000.0
 
 
 TECH = TechIHP()

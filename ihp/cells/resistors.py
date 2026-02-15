@@ -4,6 +4,8 @@ import gdsfactory as gf
 from gdsfactory import Component
 from gdsfactory.typings import LayerSpec
 
+from ihp.tech import TECH as _TECH
+
 
 def add_rect(
     component,
@@ -52,7 +54,19 @@ def rsil(
 
     Returns:
         Component with silicided poly resistor layout.
+
+    Raises:
+        ValueError: If dx (width) or dy (length) is outside allowed range.
     """
+    if dx < _TECH.rsil_min_width or dx > _TECH.rsil_max_width:
+        raise ValueError(
+            f"rsil dx={dx} out of range [{_TECH.rsil_min_width}, {_TECH.rsil_max_width}]"
+        )
+    if dy < _TECH.rsil_min_length or dy > _TECH.rsil_max_length:
+        raise ValueError(
+            f"rsil dy={dy} out of range [{_TECH.rsil_min_length}, {_TECH.rsil_max_length}]"
+        )
+
     c = Component()
 
     # Constants
@@ -69,7 +83,7 @@ def rsil(
     METAL_CONTACT_MARGIN = 0.05
     BLOCK_MARGIN = 0.18
 
-    # Validate / snap to grid
+    # Snap to grid
     dy = max(dy, RSIL_MIN_DY)
     dx = max(dx, RSIL_MIN_DX)
     dy = round(dy / GRID) * GRID
@@ -231,7 +245,19 @@ def rppd(
 
     Returns:
         Component with P+ resistor layout.
+
+    Raises:
+        ValueError: If dx (width) or dy (length) is outside allowed range.
     """
+    if dx < _TECH.rppd_min_width or dx > _TECH.rppd_max_width:
+        raise ValueError(
+            f"rppd dx={dx} out of range [{_TECH.rppd_min_width}, {_TECH.rppd_max_width}]"
+        )
+    if dy < _TECH.rppd_min_length or dy > _TECH.rppd_max_length:
+        raise ValueError(
+            f"rppd dy={dy} out of range [{_TECH.rppd_min_length}, {_TECH.rppd_max_length}]"
+        )
+
     c = Component()
 
     # Constants
@@ -252,7 +278,7 @@ def rppd(
     BLOCK_MARGIN = 0.18
     BLOCK2_MARGIN = 0.02
 
-    # Validate
+    # Snap to grid
     dy = max(dy, RPPD_MIN_DY)
     dx = max(dx, RPPD_MIN_DX)
     dy = round(dy / GRID) * GRID
@@ -424,7 +450,19 @@ def rhigh(
 
     Returns:
         Component with high-resistance poly resistor layout.
+
+    Raises:
+        ValueError: If dx (width) or dy (length) is outside allowed range.
     """
+    if dx < _TECH.rhigh_min_width or dx > _TECH.rhigh_max_width:
+        raise ValueError(
+            f"rhigh dx={dx} out of range [{_TECH.rhigh_min_width}, {_TECH.rhigh_max_width}]"
+        )
+    if dy < _TECH.rhigh_min_length or dy > _TECH.rhigh_max_length:
+        raise ValueError(
+            f"rhigh dy={dy} out of range [{_TECH.rhigh_min_length}, {_TECH.rhigh_max_length}]"
+        )
+
     c = Component()
 
     # Constants
@@ -443,7 +481,7 @@ def rhigh(
     BLOCK1_MARGIN = 0.18
     BLOCK2_MARGIN = 0.02
 
-    # Validate
+    # Snap to grid
     dy = max(dy, RHIGH_MIN_DY)
     dx = max(dx, RHIGH_MIN_DX)
     dy = round(dy / GRID) * GRID

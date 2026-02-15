@@ -358,8 +358,18 @@ def cmim(
 
     Returns:
         Component with MIM capacitor layout.
+
     Raises:
+        ValueError: If width or length is outside allowed range.
     """
+    if width < tech.TECH.cmim_min_size or width > tech.TECH.cmim_max_size:
+        raise ValueError(
+            f"cmim width={width} out of range [{tech.TECH.cmim_min_size}, {tech.TECH.cmim_max_size}]"
+        )
+    if length < tech.TECH.cmim_min_size or length > tech.TECH.cmim_max_size:
+        raise ValueError(
+            f"cmim length={length} out of range [{tech.TECH.cmim_min_size}, {tech.TECH.cmim_max_size}]"
+        )
 
     c = Component()
 
@@ -382,10 +392,6 @@ def cmim(
 
     bot_enclosure = mim_drc["vmim_enc"]
     top_enclosure = mim_drc["mim_enc"]
-
-    # verification
-    assert width > mim_drc["mim_min_size"], f"MIM width > {mim_drc['mim_min_size']}"
-    assert length > mim_drc["mim_min_size"], f"MIM width > {mim_drc['mim_min_size']}"
 
     # snap to grid
     grid = tech.TECH.grid
@@ -592,8 +598,18 @@ def rfcmim(
 
     Returns:
         Component with MIM capacitor layout.
+
     Raises:
+        ValueError: If width or length is outside allowed range.
     """
+    if width < tech.TECH.rfcmim_min_size or width > tech.TECH.rfcmim_max_size:
+        raise ValueError(
+            f"rfcmim width={width} out of range [{tech.TECH.rfcmim_min_size}, {tech.TECH.rfcmim_max_size}]"
+        )
+    if length < tech.TECH.rfcmim_min_size or length > tech.TECH.rfcmim_max_size:
+        raise ValueError(
+            f"rfcmim length={length} out of range [{tech.TECH.rfcmim_min_size}, {tech.TECH.rfcmim_max_size}]"
+        )
 
     c = Component()
 

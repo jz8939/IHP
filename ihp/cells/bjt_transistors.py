@@ -6,6 +6,7 @@ import gdsfactory as gf
 from gdsfactory.typings import LayerSpec
 
 from cni.tech import Tech
+from ihp.tech import TECH as _TECH
 
 tech_name = "SG13_dev"
 tech = Tech.get("SG13_dev").getTechParams()
@@ -67,7 +68,15 @@ def npn13G2(
 
     Returns:
         gdsfactory.Component: The generated npn13G2 transistor layout.
+
+    Raises:
+        ValueError: If finger count is outside allowed range.
     """
+    total_nx = Nx * Ny
+    if total_nx < _TECH.npn_min_nx or total_nx > _TECH.npn_max_nx:
+        raise ValueError(
+            f"npn13G2 Nx*Ny={total_nx} out of range [{_TECH.npn_min_nx}, {_TECH.npn_max_nx}]"
+        )
 
     c = gf.Component()
 
@@ -753,7 +762,15 @@ def npn13G2L(
 
     Returns:
         gdsfactory.Component: The generated npn13G2L transistor layout.
+
+    Raises:
+        ValueError: If finger count is outside allowed range.
     """
+    if Nx < _TECH.npn_min_nx or Nx > _TECH.npn_max_nx:
+        raise ValueError(
+            f"npn13G2L Nx={Nx} out of range [{_TECH.npn_min_nx}, {_TECH.npn_max_nx}]"
+        )
+
     c = gf.Component()
 
     layer_EmWind: LayerSpec = "EmWinddrawing"
@@ -1315,8 +1332,16 @@ def npn13G2V(
         Nx: Number of emitter fingers.
 
     Returns:
-        gdsfactory.Component: The generated npn13G2L transistor layout.
+        gdsfactory.Component: The generated npn13G2V transistor layout.
+
+    Raises:
+        ValueError: If finger count is outside allowed range.
     """
+    if Nx < _TECH.npn_min_nx or Nx > _TECH.npn_max_nx:
+        raise ValueError(
+            f"npn13G2V Nx={Nx} out of range [{_TECH.npn_min_nx}, {_TECH.npn_max_nx}]"
+        )
+
     c = gf.Component()
 
     layer_EmWiHV: LayerSpec = "EmWiHVdrawing"
@@ -1984,7 +2009,18 @@ def pnpMPA(length: float = 2, width: float = 0.7) -> gf.Component:
 
     Returns:
         gdsfactory.Component: The generated pnpMPA transistor layout.
+
+    Raises:
+        ValueError: If width or length is outside allowed range.
     """
+    if width < _TECH.pnp_min_width or width > _TECH.pnp_max_width:
+        raise ValueError(
+            f"pnpMPA width={width} out of range [{_TECH.pnp_min_width}, {_TECH.pnp_max_width}]"
+        )
+    if length < _TECH.pnp_min_length or length > _TECH.pnp_max_length:
+        raise ValueError(
+            f"pnpMPA length={length} out of range [{_TECH.pnp_min_length}, {_TECH.pnp_max_length}]"
+        )
 
     c = gf.Component()
 
