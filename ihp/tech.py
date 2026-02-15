@@ -450,15 +450,15 @@ margin = 0.5
 
 
 def get_layer_stack(
+    thickness_gatpoly: float = 0.16,  # GatPoly thickness (160nm from process spec)
+    thickness_cont: float = 0.64,  # Activ-M1 Cont thickness (640nm from process spec)
     thickness_metal1: float = 0.42,  # Metal1 thickness (420 nm from process specs)
     thickness_metal: float = 0.49,  # Metal2-5 thickness (490 nm from process specs)
-    thickness_via1: float = 0.54,  # Via1 thickness (540 nm from process specs)
-    thickness_via: float = 0.54,  # Via2-4 thickness (540 nm from process specs)
+    thickness_via: float = 0.54,  # Via1-4 thickness (540 nm from process specs)
     thickness_topvia1: float = 0.85,  # TopVia1 thickness (850 nm from process specs)
     thickness_topmetal1: float = 2.0,  # TopMetal1 thickness (2000 nm from process specs)
     thickness_topvia2: float = 2.8,  # TopVia2 thickness (2800 nm from process specs)
     thickness_topmetal2: float = 3.0,  # TopMetal2 thickness (3000 nm from process specs)
-    substrate_thickness: float = 300.0,  # Full substrate
 ) -> LayerStack:
     """Returns IHP PDK LayerStack for 3D visualization and simulation.
 
@@ -466,191 +466,295 @@ def get_layer_stack(
     Reference: https://ihp-open-pdk-docs.readthedocs.io/en/latest/process_specs/01_01_main_process_cross_sec.html
 
     Args:
+        thickness_gatepoly: Gate Oxide thickness in um (default: 0.16)
+        thickness_cont: Activ-Metal1 Cont thickness in um (default: 0.64)
         thickness_metal1: Metal1 layer thickness in um (default: 0.42).
         thickness_metal: Metal2-5 layer thickness in um (default: 0.49).
-        thickness_via1: Via1 layer thickness in um (default: 0.54).
-        thickness_via: Via2-4 layer thickness in um (default: 0.54).
+        thickness_via: Via1-4 layer thickness in um (default: 0.54).
         thickness_topvia1: TopVia1 layer thickness in um (default: 0.85).
         thickness_topmetal1: TopMetal1 layer thickness in um (default: 2.0).
         thickness_topvia2: TopVia2 layer thickness in um (default: 2.8).
         thickness_topmetal2: TopMetal2 layer thickness in um (default: 3.0).
-        substrate_thickness: Substrate thickness in um (default: 300.0).
 
     Returns:
         LayerStack for IHP PDK with properly connected metal and via layers.
     """
 
+    # Common z-reference: active surface at z=0.2
+    z_active_top = 0.2
+
+    # BEOL base: top of cont layer
+    z_m1 = z_active_top + thickness_cont
+    z_beol = z_m1 + thickness_metal1  # top of Metal1
+
+    # Accumulate BEOL z for Metal2-5
+    z_m5_top = (
+        z_beol
+        + 4 * thickness_via  # Via1-4
+        + 3 * thickness_metal  # Metal2-4
+        + thickness_metal
+    )  # Metal5
+    z_tv1_top = z_m5_top + thickness_topvia1
+    z_tm1_top = z_tv1_top + thickness_topmetal1
+    z_tv2_top = z_tm1_top + thickness_topvia2
+    z_tm2_top = z_tv2_top + thickness_topmetal2
+
     return LayerStack(
         layers=dict(
-            # Substrate
-            substrate=LayerLevel(
-                layer=LAYER.Substratedrawing,
-                thickness=substrate_thickness,
-                zmin=-substrate_thickness,
+            # ============ Sub-surface ============
+            # PWell - p-type well implant
+            pwell=LayerLevel(
+                layer=LAYER.PWelldrawing,
+                thickness=1.5,
+                zmin=-1.32,
                 material="si",
-                info={"mesh_order": 99},
+                info={"mesh_order": 97},
             ),
+            # NWell - deep n-type well implant (for pmos)
+            nwell=LayerLevel(
+                layer=LAYER.NWelldrawing,
+                thickness=1.5,
+                zmin=-1.30,
+                material="si",
+                info={"mesh_order": 98},
+            ),
+            # ============ Active surface ============
             # Active silicon
             active=LayerLevel(
                 layer=LAYER.Activdrawing,
-                thickness=0.2,
+                thickness=0.201,
                 zmin=0.0,
                 material="si",
                 info={"mesh_order": 1},
             ),
-            # Poly gate
-            poly=LayerLevel(
-                layer=LAYER.GatPolydrawing,
-                thickness=0.18,
+            # nSD - n+ source/drain implant (shallow, jittered +0.01 above active base)
+            nsd=LayerLevel(
+                layer=LAYER.nSDdrawing,
+                thickness=0.2,
                 zmin=0.0,
-                material="poly_si",
+                material="si",
                 info={"mesh_order": 2},
             ),
+            # pSD - p+ source/drain implant (shallow, jittered +0.02)
+            psd=LayerLevel(
+                layer=LAYER.pSDdrawing,
+                thickness=0.199,
+                zmin=0.0,
+                material="si",
+                info={"mesh_order": 3},
+            ),
+            # SalBlock - salicide block (thin marker on active surface)
+            salblock=LayerLevel(
+                layer=LAYER.SalBlockdrawing,
+                thickness=0.02,
+                zmin=z_active_top,
+                material="sin",
+                info={"mesh_order": 4},
+            ),
+            # ThickGateOx - HV gate oxide ~7.3nm (TGOX1NW/TGOX1PW)
+            thickgateox=LayerLevel(
+                layer=LAYER.ThickGateOxdrawing,
+                thickness=0.0073,
+                zmin=z_active_top,
+                material="sio2",
+                info={"mesh_order": 5},
+            ),
+            # ============ Poly / emitter ============
+            # GatPoly - polysilicon gate
+            poly=LayerLevel(
+                layer=LAYER.GatPolydrawing,
+                thickness=thickness_gatpoly,
+                zmin=z_active_top,
+                material="poly_si",
+                info={"mesh_order": 6},
+            ),
+            # PolyRes - polysilicon resistor body (same z as gate poly)
+            polyres=LayerLevel(
+                layer=LAYER.PolyResdrawing,
+                thickness=thickness_gatpoly,
+                zmin=z_active_top,
+                material="poly_si",
+                info={"mesh_order": 7},
+            ),
+            # EXTBlock - extension implant block (marker on poly)
+            extblock=LayerLevel(
+                layer=LAYER.EXTBlockdrawing,
+                thickness=0.02,
+                zmin=z_active_top + thickness_gatpoly,
+                material="sin",
+                info={"mesh_order": 8},
+            ),
+            # EmWind - bipolar emitter window (on poly surface)
+            emwind=LayerLevel(
+                layer=LAYER.EmWinddrawing,
+                thickness=0.03,
+                zmin=z_active_top + thickness_gatpoly,
+                material="poly_si",
+                info={"mesh_order": 9},
+            ),
+            # EmWiHV - bipolar HV emitter window
+            emwihv=LayerLevel(
+                layer=LAYER.EmWiHVdrawing,
+                thickness=0.03,
+                zmin=z_active_top + thickness_gatpoly,
+                material="poly_si",
+                info={"mesh_order": 10},
+            ),
+            # HeatTrans - heater/thermal layer (on top of poly)
+            heattrans=LayerLevel(
+                layer=LAYER.HeatTransdrawing,
+                thickness=0.05,
+                zmin=z_active_top + thickness_gatpoly,
+                material="TiN",
+                info={"mesh_order": 11},
+            ),
+            # HeatRes - heater resistor body
+            heatres=LayerLevel(
+                layer=LAYER.HeatResdrawing,
+                thickness=0.05,
+                zmin=z_active_top + thickness_gatpoly,
+                material="TiN",
+                info={"mesh_order": 12},
+            ),
+            # ============ Contact ============
+            # Cont - tungsten contact plugs (Activ/Poly to Metal1)
+            cont=LayerLevel(
+                layer=LAYER.Contdrawing,
+                thickness=thickness_cont,
+                zmin=z_active_top,
+                material="tungsten",
+                info={"mesh_order": 13},
+            ),
+            # ============ BEOL metals and vias ============
             # Metal 1
             metal1=LayerLevel(
                 layer=LAYER.Metal1drawing,
                 thickness=thickness_metal1,
-                zmin=1.0,
+                zmin=z_m1,
                 material="aluminum",
-                info={"mesh_order": 3},
+                info={"mesh_order": 14},
             ),
             # Via 1
             via1=LayerLevel(
                 layer=LAYER.Via1drawing,
-                thickness=thickness_via1,
-                zmin=1.0 + thickness_metal1,
+                thickness=thickness_via,
+                zmin=z_beol,
                 material="tungsten",
-                info={"mesh_order": 4},
+                info={"mesh_order": 15},
             ),
             # Metal 2
             metal2=LayerLevel(
                 layer=LAYER.Metal2drawing,
                 thickness=thickness_metal,
-                zmin=1.0 + thickness_metal1 + thickness_via1,
+                zmin=z_beol + thickness_via,
                 material="aluminum",
-                info={"mesh_order": 5},
+                info={"mesh_order": 16},
             ),
             # Via 2
             via2=LayerLevel(
                 layer=LAYER.Via2drawing,
                 thickness=thickness_via,
-                zmin=1.0 + thickness_metal1 + thickness_via1 + thickness_metal,
+                zmin=z_beol + thickness_via + thickness_metal,
                 material="tungsten",
-                info={"mesh_order": 6},
+                info={"mesh_order": 17},
             ),
             # Metal 3
             metal3=LayerLevel(
                 layer=LAYER.Metal3drawing,
                 thickness=thickness_metal,
-                zmin=1.0
-                + thickness_metal1
-                + thickness_via1
-                + thickness_metal
-                + thickness_via,
+                zmin=z_beol + 2 * thickness_via + thickness_metal,
                 material="aluminum",
-                info={"mesh_order": 7},
+                info={"mesh_order": 18},
             ),
             # Via 3
             via3=LayerLevel(
                 layer=LAYER.Via3drawing,
                 thickness=thickness_via,
-                zmin=1.0
-                + thickness_metal1
-                + thickness_via1
-                + 2 * thickness_metal
-                + thickness_via,
+                zmin=z_beol + 2 * thickness_via + 2 * thickness_metal,
                 material="tungsten",
-                info={"mesh_order": 8},
+                info={"mesh_order": 19},
             ),
             # Metal 4
             metal4=LayerLevel(
                 layer=LAYER.Metal4drawing,
                 thickness=thickness_metal,
-                zmin=1.0
-                + thickness_metal1
-                + thickness_via1
-                + 2 * thickness_metal
-                + 2 * thickness_via,
+                zmin=z_beol + 3 * thickness_via + 2 * thickness_metal,
                 material="aluminum",
-                info={"mesh_order": 9},
+                info={"mesh_order": 20},
             ),
             # Via 4
             via4=LayerLevel(
                 layer=LAYER.Via4drawing,
                 thickness=thickness_via,
-                zmin=1.0
-                + thickness_metal1
-                + thickness_via1
-                + 3 * thickness_metal
-                + 2 * thickness_via,
+                zmin=z_beol + 3 * thickness_via + 3 * thickness_metal,
                 material="tungsten",
-                info={"mesh_order": 10},
+                info={"mesh_order": 21},
             ),
             # Metal 5
             metal5=LayerLevel(
                 layer=LAYER.Metal5drawing,
                 thickness=thickness_metal,
-                zmin=1.0
-                + thickness_metal1
-                + thickness_via1
-                + 3 * thickness_metal
-                + 3 * thickness_via,
+                zmin=z_beol + 4 * thickness_via + 3 * thickness_metal,
                 material="aluminum",
-                info={"mesh_order": 11},
+                info={"mesh_order": 22},
             ),
-            # Top Via 1
+            # MIM capacitor - dielectric 40nm (TISMIM) + top plate 150nm (TMIMTOP)
+            # Sits on top of Metal5
+            mim=LayerLevel(
+                layer=LAYER.MIMdrawing,
+                thickness=0.04 + 0.15,
+                zmin=z_m5_top,
+                material="sio2",
+                info={"mesh_order": 23},
+            ),
+            # Vmim - MIM via (connects MIM top plate to TopMetal1)
+            vmim=LayerLevel(
+                layer=LAYER.Vmimdrawing,
+                thickness=thickness_topvia1 - 0.19,
+                zmin=z_m5_top + 0.19 + 0.01,
+                material="tungsten",
+                info={"mesh_order": 24},
+            ),
+            # TopVia1
             topvia1=LayerLevel(
                 layer=LAYER.TopVia1drawing,
                 thickness=thickness_topvia1,
-                zmin=1.0
-                + thickness_metal1
-                + thickness_via1
-                + 4 * thickness_metal
-                + 3 * thickness_via,
+                zmin=z_m5_top,
                 material="tungsten",
-                info={"mesh_order": 12},
+                info={"mesh_order": 25},
             ),
-            # Top Metal 1
+            # TopMetal1
             topmetal1=LayerLevel(
                 layer=LAYER.TopMetal1drawing,
                 thickness=thickness_topmetal1,
-                zmin=1.0
-                + thickness_metal1
-                + thickness_via1
-                + 4 * thickness_metal
-                + 3 * thickness_via
-                + thickness_topvia1,
+                zmin=z_tv1_top,
                 material="aluminum",
-                info={"mesh_order": 13},
+                info={"mesh_order": 26},
             ),
-            # Top Via 2
+            # TopVia2
             topvia2=LayerLevel(
                 layer=LAYER.TopVia2drawing,
                 thickness=thickness_topvia2,
-                zmin=1.0
-                + thickness_metal1
-                + thickness_via1
-                + 4 * thickness_metal
-                + 3 * thickness_via
-                + thickness_topvia1
-                + thickness_topmetal1,
+                zmin=z_tm1_top,
                 material="tungsten",
-                info={"mesh_order": 14},
+                info={"mesh_order": 27},
             ),
-            # Top Metal 2
+            # TopMetal2
             topmetal2=LayerLevel(
                 layer=LAYER.TopMetal2drawing,
                 thickness=thickness_topmetal2,
-                zmin=1.0
-                + thickness_metal1
-                + thickness_via1
-                + 4 * thickness_metal
-                + 3 * thickness_via
-                + thickness_topvia1
-                + thickness_topmetal1
-                + thickness_topvia2,
+                zmin=z_tv2_top,
                 material="aluminum",
-                info={"mesh_order": 15},
+                info={"mesh_order": 28},
+            ),
+            # ============ Passivation / pad ============
+            # Passivation (TPASS1=1500nm + TPASS2=400nm)
+            passiv=LayerLevel(
+                layer=LAYER.Passivdrawing,
+                thickness=1.5 + 0.4,
+                zmin=z_tm2_top,
+                material="sin",
+                info={"mesh_order": 29},
             ),
         )
     )

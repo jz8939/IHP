@@ -1,5 +1,6 @@
 """Cells."""
 
+from .antennas import *
 from .bjt_transistors import *
 from .bondpads import *
 from .capacitors import *
